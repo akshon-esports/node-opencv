@@ -10,15 +10,18 @@ namespace ncv {
     using MouseAction = std::function<void(int, int, int, int)>;
 
     NAN_METHOD(CreateTrackbar) {
-      FUNCTION_REQUIRE_ARGUMENTS_MIN(2, 4);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(2, 4);
       Nan::HandleScope scope;
       ASSERT_STRING_FROM_ARGS(trackbarname, 0);
       ASSERT_STRING_FROM_ARGS(winname, 1);
       ASSERT_INT_FROM_ARGS(count, 2);
-      FUNCTION_FROM_ARGS(fn, 3);
+      FUNCTION_FROM_ARGS(fn, 3) else {
+        TRY_CATCH_THROW_OPENCV(cv::createTrackbar(trackbarname, winname, nullptr, count));
+        return;
+      }
 
       Nan::Persistent<Function> onChange;
-      TrackbarAction action = [onChange](int pos) {
+      TrackbarAction action = [&onChange](int pos) {
         Nan::HandleScope scope;
 
         if (onChange.IsEmpty()) {
@@ -116,7 +119,7 @@ namespace ncv {
       FUNCTION_REQUIRE_ARGUMENTS_RANGE(1, 4);
       Nan::HandleScope scope;
 
-      unsigned argumentOffset = 0;
+      int argumentOffset = 0;
       std::string winname;
       if (info[0]->IsString()) {
         ASSERT_STRING_FROM_ARGS(name, 0);
@@ -130,7 +133,7 @@ namespace ncv {
 
       TRY_CATCH_THROW_OPENCV(info.GetReturnValue().Set(Rect::NewInstance(
         winname.empty() ? cv::selectROI(image, showCrosshair, fromCenter) : cv::selectROI(winname, image, showCrosshair, fromCenter)
-      )));
+    )));
     }
 
     NAN_METHOD(SelectROIs) {
@@ -153,7 +156,7 @@ namespace ncv {
     }
 
     NAN_METHOD(SetMouseCallback) {
-      FUNCTION_REQUIRE_ARGUMENTS_MIN(2, 4);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(2, 4);
       Nan::HandleScope scope;
       ASSERT_STRING_FROM_ARGS(trackbarname, 0);
       ASSERT_STRING_FROM_ARGS(winname, 1);
@@ -161,7 +164,7 @@ namespace ncv {
       FUNCTION_FROM_ARGS(fn, 3);
 
       Nan::Persistent<Function> onMouse;
-      MouseAction action = [onMouse](int event, int x, int y, int flags) {
+      MouseAction action = [&onMouse](int event, int x, int y, int flags) {
         Nan::HandleScope scope;
 
         if (onMouse.IsEmpty()) {

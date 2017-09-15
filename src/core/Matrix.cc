@@ -524,3 +524,20 @@ NAN_METHOD(Matrix::Size) {
   SETUP_FUNCTION(Matrix);
   TRY_CATCH_THROW_OPENCV(info.GetReturnValue().Set(Size::NewInstance(self->mat.size())));
 }
+
+NAN_GETTER(Matrix::GetFlags) {
+  SETUP_FUNCTION(Matrix);
+  info.GetReturnValue().Set(Nan::New<Number>(self->mat.flags));
+};
+NAN_GETTER(Matrix::GetDimensions) {
+  SETUP_FUNCTION(Matrix);
+  info.GetReturnValue().Set(Nan::New<Number>(self->mat.dims));
+};
+NAN_GETTER(Matrix::GetRows) {
+  SETUP_FUNCTION(Matrix);
+  info.GetReturnValue().Set(Nan::New<Number>(self->mat.rows));
+};
+NAN_GETTER(Matrix::GetColumns) {
+  SETUP_FUNCTION(Matrix);
+  info.GetReturnValue().Set(Nan::New<Number>(self->mat.cols));
+};
