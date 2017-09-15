@@ -38,7 +38,7 @@ VideoCaptureStream = module.exports.VideoCaptureStream = function(src) {
   process.nextTick(frame);
 };
 
-util.inherits(VideoCaptureStream, stream.Readable);
+util.inherits(VideoCaptureStream, stream.Stream);
 
 VideoCaptureStream.prototype.read = function() {
   return this.video.read();

@@ -4,6 +4,64 @@ namespace ncv {
 
   namespace imgproc {
 
+    NAN_METHOD(AdaptiveThreshold) {
+      FUNCTION_REQUIRE_ARGUMENTS(7);
+      Nan::HandleScope scope;
+      ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+      ASSERT_DOUBLE_FROM_ARGS(maxval, 2);
+      ASSERT_INT_FROM_ARGS(adaptiveMethod, 3);
+      ASSERT_INT_FROM_ARGS(adaptiveType, 4);
+      ASSERT_INT_FROM_ARGS(blockSize, 5);
+      ASSERT_DOUBLE_FROM_ARGS(C, 6);
+      TRY_CATCH_THROW_OPENCV(cv::adaptiveThreshold(src, dst, maxval, adaptiveMethod, adaptiveType, blockSize, C));
+    }
+
+    NAN_METHOD(CvtColor) {
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(3, 4);
+      Nan::HandleScope scope;
+      ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+      ASSERT_INT_FROM_ARGS(code, 2);
+      DEFAULT_INT_FROM_ARGS(dstCn, 3, 0);
+      TRY_CATCH_THROW_OPENCV(cv::cvtColor(src, dst, code, dstCn));
+    }
+
+    NAN_METHOD(DistanceTransform) {
+      NotImplemented(info);
+    }
+
+    NAN_METHOD(FloodFill) {
+      NotImplemented(info);
+    }
+
+    NAN_METHOD(GrabCut) {
+      NotImplemented(info);
+    }
+
+    NAN_METHOD(Integral) {
+      NotImplemented(info);
+    }
+
+    NAN_METHOD(Threshold) {
+      FUNCTION_REQUIRE_ARGUMENTS(5);
+      Nan::HandleScope scope;
+      ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+      ASSERT_DOUBLE_FROM_ARGS(thresh, 2);
+      ASSERT_DOUBLE_FROM_ARGS(maxval, 3);
+      ASSERT_INT_FROM_ARGS(type, 4);
+      TRY_CATCH_THROW_OPENCV(info.GetReturnValue().Set(Nan::New<Number>(cv::threshold(src, dst, thresh, maxval, type))));
+    }
+
+    NAN_METHOD(Watershed) {
+      FUNCTION_REQUIRE_ARGUMENTS(2);
+      Nan::HandleScope scope;
+      ASSERT_INPUTARRAY_FROM_ARGS(image, 0);
+      ASSERT_INPUTOUTPUTARRAY_FROM_ARGS(markers, 1);
+      TRY_CATCH_THROW_OPENCV(cv::watershed(image, markers));
+    }
+
     void MiscInit(Local<Object> &target) {
       // adaptive threshold types
       DEFINE_CONST_ENUM(ADAPTIVE_THRESH_MEAN_C);
@@ -273,38 +331,6 @@ namespace ncv {
       Nan::SetMethod(target, "integral", Integral);
       Nan::SetMethod(target, "threshold", Threshold);
       Nan::SetMethod(target, "watershed", Watershed);
-    }
-
-    NAN_METHOD(AdaptiveThreshold) {
-      NotImplemented(info);
-    }
-
-    NAN_METHOD(CvtColor) {
-      NotImplemented(info);
-    }
-
-    NAN_METHOD(DistanceTransform) {
-      NotImplemented(info);
-    }
-
-    NAN_METHOD(FloodFill) {
-      NotImplemented(info);
-    }
-
-    NAN_METHOD(GrabCut) {
-      NotImplemented(info);
-    }
-
-    NAN_METHOD(Integral) {
-      NotImplemented(info);
-    }
-
-    NAN_METHOD(Threshold) {
-      NotImplemented(info);
-    }
-
-    NAN_METHOD(Watershed) {
-      NotImplemented(info);
     }
 
   }
