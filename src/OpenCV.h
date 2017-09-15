@@ -9,8 +9,6 @@
     namespace std{ typedef type_info type_info; }
 #endif
 
-
-
 #include <v8.h>
 #include <node.h>
 #include <node_object_wrap.h>
@@ -32,7 +30,6 @@
 #include <nan.h>
 
 using namespace v8;
-using namespace node;
 
 #define UNWRAP_OBJ(TYP, OBJ) Nan::ObjectWrap::Unwrap<TYP>(OBJ)
 
@@ -44,8 +41,8 @@ using namespace node;
   Local<Function> VAR = Local<Function>::Cast(info[I]);
 
 #define SETUP_FUNCTION(TYP)	\
-	Nan::HandleScope scope;		\
-	TYP *self = UNWRAP_OBJ(TYP, info.This());
+  Nan::HandleScope scope; \
+  TYP *self = UNWRAP_OBJ(TYP, info.This());
 
 #define JSFUNC(NAME) \
   static NAN_METHOD(NAME);
@@ -56,15 +53,66 @@ using namespace node;
 #define JSTHROW(ERR) \
   Nan::ThrowError( ERR );
 
+#define FUNCTION_MIN_ARGUMENTS(COUNT, FUNC_NAME) \
+  if (info.Length() < COUNT) { \
+    return Nan::ThrowError(cv::format("%s requires at least %d arguments", FUNC_NAME, COUNT).c_str()); \
+  }
+
+#define THROW_INVALID_ARGUMENT_TYPE(IND, TYPE_STR) \
+  Nan::ThrowTypeError(cv::format("Argument %d must be %s", IND + 1, TYPE_STR).c_str())
+
+#define _ELSE_DEFAULT_(NAME, DEF) else { \
+    NAME = DEF; \
+  }
+
+#define _ELSE_THROW_INVALID_ARGUMENT_TYPE_(IND, TYPE_STR) else { \
+    return THROW_INVALID_ARGUMENT_TYPE(IND, TYPE_STR); \
+  }
+
 #define INT_FROM_ARGS(NAME, IND) \
+  int NAME; \
   if (info.Length() > IND && info[IND]->IsNumber()) { \
     NAME = info[IND]->Int32Value(); \
   }
 
+#define ASSERT_INT_FROM_ARGS(NAME, IND) \
+  INT_FROM_ARGS(NAME, IND) _ELSE_THROW_INVALID_ARGUMENT_TYPE_(IND, "a number")
+
+#define DEFAULT_INT_FROM_ARGS(NAME, IND, DEF) \
+  INT_FROM_ARGS(NAME, IND) _ELSE_DEFAULT_(NAME, DEF)
+
 #define DOUBLE_FROM_ARGS(NAME, IND) \
-  if (info.Length() > IND && info[IND]->IsNumber()){ \
+  double NAME; \
+  if (info.Length() > IND && info[IND]->IsNumber()) { \
     NAME = info[IND]->NumberValue(); \
   }
+
+#define ASSERT_DOUBLE_FROM_ARGS(NAME, IND) \
+  DOUBLE_FROM_ARGS(NAME, IND) _ELSE_THROW_INVALID_ARGUMENT_TYPE_(IND, "a number")
+
+#define DEFAULT_DOUBLE_FROM_ARGS(NAME, IND, DEF) \
+  DOUBLE_FROM_ARGS(NAME, IND) _ELSE_DEFAULT_(NAME, DEF)
+
+#define BOOLEAN_FROM_ARGS(NAME, IND) \
+  bool NAME; \
+  if (info.Length() > IND && info[IND]->IsBoolean()) { \
+    NAME = info[IND]->BooleanValue(); \
+  }
+
+#define ASSERT_BOOLEAN_FROM_ARGS(NAME, IND) \
+  BOOLEAN_FROM_ARGS(NAME, IND) _ELSE_THROW_INVALID_ARGUMENT_TYPE_(IND, "a boolean")
+
+#define DEFAULT_BOOLEAN_FROM_ARGS(NAME, IND, DEF) \
+  BOOLEAN_FROM_ARGS(NAME, IND) _ELSE_DEFAULT_(NAME, DEF)
+
+#define STRING_FROM_ARGS(NAME, IND) \
+  std::string NAME; \
+  if (info.Length() > IND && info[IND]->IsString()) { \
+    NAME = *Nan::Utf8String(info[IND]->ToString()); \
+  }
+
+#define ASSERT_STRING_FROM_ARGS(NAME, IND) \
+  STRING_FROM_ARGS(NAME, IND) _ELSE_THROW_INVALID_ARGUMENT_TYPE_(IND, "a string")
 
 #define SETUP_ARGC_AND_ARGV() \
   int argc = info.Length(); \
@@ -76,7 +124,9 @@ public:
   static void Init(Local<Object> target);
 
   static NAN_METHOD(ReadImage);
+  static NAN_METHOD(ReadImageSync);
   static NAN_METHOD(ReadImageMulti);
+  static NAN_METHOD(ReadImageMultiSync);
 };
 
 #endif

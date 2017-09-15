@@ -7,6 +7,7 @@
 #include "Matrix.h"
 #include "CascadeClassifierWrap.h"
 #include "VideoCaptureWrap.h"
+#include "Contour.h"
 #include "Contours.h"
 #include "CamShift.h"
 #include "HighGUI.h"
@@ -31,6 +32,7 @@ extern "C" void init(Local<Object> target) {
   CascadeClassifierWrap::Init(target);
   VideoCaptureWrap::Init(target);
   Contour::Init(target);
+  Contours::Init(target);
   TrackedObject::Init(target);
   NamedWindow::Init(target);
   Constants::Init(target);

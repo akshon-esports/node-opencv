@@ -20,6 +20,7 @@ public:
   Matrix(int rows, int cols, int type, Local<Object> scalarObj);
 
   static Local<Object> NewInstance();
+  static Local<Object> NewInstance(cv::Mat &mat);
 
   static bool HasInstance(Local<Value> object);
 

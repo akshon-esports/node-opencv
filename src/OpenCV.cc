@@ -2,6 +2,54 @@
 #include "Matrix.h"
 #include <nan.h>
 
+class HybridAsyncWorker : public Nan::AsyncWorker {
+public:
+  HybridAsyncWorker(): AsyncWorker{ nullptr } {}
+
+  virtual Local<Value> GetResult() = 0;
+
+protected:
+  void HandleOKCallback() override final {
+    Nan::HandleScope scope;
+
+    Local<Value> result = GetResult();
+
+    Local<Value> callback_or_resolver = GetFromPersistent(0u);
+    if (callback_or_resolver->IsFunction()) {
+      Local<Value> argv[2] = { Nan::Undefined(), result };
+
+      Nan::TryCatch try_catch;
+      Local<Function>::Cast(callback_or_resolver)->Call(Nan::GetCurrentContext()->Global(), 2, argv);
+      if (try_catch.HasCaught()) {
+        Nan::FatalException(try_catch);
+      }
+    } else {
+      Local<Promise::Resolver>::Cast(callback_or_resolver)->Resolve(result);
+      Isolate::GetCurrent()->RunMicrotasks();
+    }
+  }
+
+  void HandleErrorCallback() override final {
+    Nan::HandleScope scope;
+
+    Local<Value> error = Nan::Error(ErrorMessage());
+
+    Local<Value> callback_or_resolver = GetFromPersistent(0u);
+    if (callback_or_resolver->IsFunction()) {
+      Local<Value> argv[1] = { error };
+
+      Nan::TryCatch try_catch;
+      Local<Function>::Cast(callback_or_resolver)->Call(Nan::GetCurrentContext()->Global(), 1, argv);
+      if (try_catch.HasCaught()) {
+        Nan::FatalException(try_catch);
+      }
+    } else {
+      Local<Promise::Resolver>::Cast(callback_or_resolver)->Reject(error);
+      Isolate::GetCurrent()->RunMicrotasks();
+    }
+  }
+};
+
 void OpenCV::Init(Local<Object> target) {
   Nan::HandleScope scope;
 
@@ -9,17 +57,27 @@ void OpenCV::Init(Local<Object> target) {
   target->Set(Nan::New<String>("version").ToLocalChecked(), Nan::New<String>(CV_VERSION).ToLocalChecked());
 
   Nan::SetMethod(target, "readImage", ReadImage);
+  Nan::SetMethod(target, "readImageSync", ReadImageSync);
   Nan::SetMethod(target, "readImageMulti", ReadImageMulti);
+  Nan::SetMethod(target, "readImageMultiSync", ReadImageMultiSync);
 }
 
-class ReadImageAsyncWorker : public Nan::AsyncWorker {
+class BaseImageReadingAsyncWorker : public HybridAsyncWorker {
 public:
-  ReadImageAsyncWorker(const std::string &path): Nan::AsyncWorker{nullptr}, path(path) {}
-  ReadImageAsyncWorker(const unsigned &length, uint8_t *data): Nan::AsyncWorker{nullptr}, length(length), data(data) {}
+  BaseImageReadingAsyncWorker() : HybridAsyncWorker() {}
 
   void SetImreadMode(cv::ImreadModes mode) {
     this->mode = mode;
   }
+
+protected:
+  cv::ImreadModes mode = cv::IMREAD_COLOR;
+};
+
+class ReadImageAsyncWorker : public BaseImageReadingAsyncWorker {
+public:
+  ReadImageAsyncWorker(std::string const path) : BaseImageReadingAsyncWorker(), path(path) {}
+  ReadImageAsyncWorker(unsigned const length, uint8_t* const data) : BaseImageReadingAsyncWorker(), length(length), data(data) {}
 
   void Execute() override {
     try {
@@ -38,130 +96,52 @@ public:
     }
   }
 
-protected:
-  void HandleOKCallback() override {
-    Nan::HandleScope scope;
-
-    Local<Object> m = Matrix::NewInstance();
-    UNWRAP_OBJ(Matrix, m)->mat = this->mat;
-
-    OnSuccess(m);
+  Local<Value> GetResult() {
+    return Matrix::NewInstance(mat);
   }
-
-  void HandleErrorCallback() override {
-    Nan::HandleScope scope;
-
-    OnFailure(Nan::Error(ErrorMessage()));
-  }
-
-protected:
-  virtual void OnSuccess(Local<Value> value) = 0;
-  virtual void OnFailure(Local<Value> error) = 0;
 
 private:
-    const std::string path = nullptr;
+    std::string const path = nullptr;
 
-    unsigned length = 0;
-    uint8_t *data = nullptr;
-
-    cv::ImreadModes mode = cv::IMREAD_COLOR;
+    unsigned const length = 0;
+    uint8_t* const data = nullptr;
 
     cv::Mat mat;
-};
-
-class CallbackReadImageAsyncWorker : public ReadImageAsyncWorker {
-public:
-  CallbackReadImageAsyncWorker(const std::string &path): ReadImageAsyncWorker(path) {}
-  CallbackReadImageAsyncWorker(const unsigned &length, uint8_t *data): ReadImageAsyncWorker(length, data) {}
-
-protected:
-  void OnSuccess(Local<Value> value) override {
-	Nan::HandleScope scope;
-
-    Local<Value> argv[2] = {Nan::Undefined(), value};
-    ExecuteCallback(2, argv);
-  }
-
-  void OnFailure(Local<Value> error) override {
-	Nan::HandleScope scope;
-
-    Local<Value> argv[1] = {error};
-    ExecuteCallback(1, argv);
-  }
-private:
-  void ExecuteCallback(const int &argc, Local<Value> argv[]) {
-	Nan::HandleScope scope;
-    
-  	Local<Function> callback = Local<Function>::Cast(GetFromPersistent(0u));
-
-    Nan::TryCatch try_catch;
-    callback->Call(Nan::GetCurrentContext()->Global(), argc, argv);
-    if (try_catch.HasCaught()) {
-      Nan::FatalException(try_catch);
-    }
-  }
-};
-
-class PromiseReadImageAsyncWorker : public ReadImageAsyncWorker {
-public:
-  PromiseReadImageAsyncWorker(const std::string &path): ReadImageAsyncWorker(path) {}
-  PromiseReadImageAsyncWorker(const unsigned &length, uint8_t *data): ReadImageAsyncWorker(length, data) {}
-
-protected:
-  void OnSuccess(Local<Value> value) override {
-    GetPromise()->Resolve(Nan::GetCurrentContext(), value);
-    Isolate::GetCurrent()->RunMicrotasks();
-  }
-
-  void OnFailure(Local<Value> error) override {
-    GetPromise()->Reject(Nan::GetCurrentContext(), error);
-    Isolate::GetCurrent()->RunMicrotasks();
-  }
-private:
-  Local<Promise::Resolver> GetPromise() {
-    return Local<Promise::Resolver>::Cast(GetFromPersistent(0u));
-  }
 };
 
 NAN_METHOD(OpenCV::ReadImage) {
   Nan::EscapableHandleScope scope;
 
-  if (info.Length() < 1) {
-    return Nan::ThrowError("readImage requires at least 1 arguments");
+  FUNCTION_MIN_ARGUMENTS(1, "readImage()");
+
+  ReadImageAsyncWorker* worker;
+  if (info[0]->IsString()) {
+    worker = new ReadImageAsyncWorker(std::string(*Nan::Utf8String(info[0]->ToString())));
+  } else if (Buffer::HasInstance(info[0])) {
+    worker = new ReadImageAsyncWorker(Buffer::Length(info[0]->ToObject()), reinterpret_cast<uint8_t *>(Buffer::Data(info[0]->ToObject())));
+  } else {
+    return THROW_INVALID_ARGUMENT_TYPE(0, "a string or a Buffer");
   }
 
+  int argumentOffset = 1;
+  INT_FROM_ARGS(mode, 1) else {
+    mode = cv::IMREAD_ANYCOLOR;
+    argumentOffset = 0;
+  }
+
+  worker->SetImreadMode(static_cast<cv::ImreadModes>(mode));
+
   bool isCallback = false;
-  if (info.Length() > 1) {
-    if (!info[1]->IsFunction()) {
-      return Nan::ThrowTypeError("Argument 2 must be a Function");
+  if (info.Length() > 1 + argumentOffset) {
+    if (!info[1 + argumentOffset]->IsFunction()) {
+      return THROW_INVALID_ARGUMENT_TYPE(1 + argumentOffset, "a function");
     }
 
     isCallback = true;
   }
 
-  ReadImageAsyncWorker *worker = nullptr;
-  if (info[0]->IsString()) {
-    std::string path = std::string(*Nan::Utf8String(info[0]->ToString()));
-    if (isCallback) {
-      worker = new CallbackReadImageAsyncWorker(path);
-    } else {
-      worker = new PromiseReadImageAsyncWorker(path);
-    }
-  } else if (Buffer::HasInstance(info[0])) {
-    unsigned len = Buffer::Length(info[0]->ToObject());
-    uint8_t *data = (uint8_t *)Buffer::Data(info[0]->ToObject());
-
-    if (isCallback) {
-      worker = new CallbackReadImageAsyncWorker(len, data);
-    } else {
-      worker = new PromiseReadImageAsyncWorker(len, data);
-    }
-  } else {
-    return Nan::ThrowTypeError("Argument 1 must be a string or a Buffer");
-  }
-
   if (isCallback) {
-    worker->SaveToPersistent(0u, info[1]);
+    worker->SaveToPersistent(0u, info[1 + argumentOffset]);
   } else {
     Local<Promise::Resolver> resolver = Promise::Resolver::New(Nan::GetCurrentContext()).ToLocalChecked();
     worker->SaveToPersistent(0u, resolver);
@@ -171,53 +151,114 @@ NAN_METHOD(OpenCV::ReadImage) {
   Nan::AsyncQueueWorker(worker);
 }
 
-#if CV_MAJOR_VERSION >= 3
-NAN_METHOD(OpenCV::ReadImageMulti) {
+NAN_METHOD(OpenCV::ReadImageSync) {
   Nan::EscapableHandleScope scope;
 
-  REQ_FUN_ARG(1, cb);
+  FUNCTION_MIN_ARGUMENTS(1, "readImage");
 
-  Local<Value> argv[2];
-  argv[0] = Nan::Null();
+  ReadImageAsyncWorker *worker;
+  if (info[0]->IsString()) {
+    worker = new ReadImageAsyncWorker(std::string(*Nan::Utf8String(info[0]->ToString())));
+  } else if (Buffer::HasInstance(info[0])) {
+    worker = new ReadImageAsyncWorker(Buffer::Length(info[0]->ToObject()), reinterpret_cast<uint8_t *>(Buffer::Data(info[0]->ToObject())));
+  } else {
+    return Nan::ThrowTypeError("Argument 1 must be a string or a Buffer");
+  }
+
+  DEFAULT_INT_FROM_ARGS(mode, 1, cv::IMREAD_ANYCOLOR);
+  worker->SetImreadMode(static_cast<cv::ImreadModes>(mode));
+  worker->Execute();
+  info.GetReturnValue().Set(worker->GetResult());
+  delete worker;
+}
+
+#if CV_MAJOR_VERSION >= 3
+class ReadImageMultiAsyncWorker : public BaseImageReadingAsyncWorker {
+public:
+  ReadImageMultiAsyncWorker(const std::string &path) : BaseImageReadingAsyncWorker(), path(path) {}
+
+  void Execute() override {
+    try {
+      cv::imreadmulti(path, mats, mode);
+    } catch (cv::Exception& e) {
+      return SetErrorMessage(e.what());
+    }
+
+    if (mats.empty()) {
+      SetErrorMessage("Could not open or find the file");
+    }
+  }
+
+  Local<Value> GetResult() {
+    Local<Array> out = Nan::New<Array>();
+    for (cv::Mat &mat : mats) {
+      Nan::Set(out, out->Length(), Matrix::NewInstance(mat));
+    }
+
+    return out;
+  }
+
+private:
+  const std::string path = nullptr;
 
   std::vector<cv::Mat> mats;
-  try {
-    if (info[0]->IsString()) {
-      std::string filename = std::string(*Nan::Utf8String(info[0]->ToString()));
-      cv::imreadmulti(filename, mats);
-
-      if (mats.empty()) {
-        argv[0] = Nan::Error("Error loading file");
-      }
-    }
-  } catch (cv::Exception& e) {
-    argv[0] = Nan::Error(e.what());
-    argv[1] = Nan::Null();
-  }
-
-  Local <Array> output = Nan::New<Array>(mats.size());
-  argv[1] = output;
-
-  for (std::vector<cv::Mat>::size_type i = 0; i < mats.size(); i ++) {
-    Local<Object> im_h = Nan::NewInstance(Nan::GetFunction(Nan::New(Matrix::constructor)).ToLocalChecked()).ToLocalChecked();
-    Matrix *img = Nan::ObjectWrap::Unwrap<Matrix>(im_h);
-    img->mat = mats[i];
-
-    output->Set(i, im_h);
-  }
-
-  Nan::TryCatch try_catch;
-  cb->Call(Nan::GetCurrentContext()->Global(), 2, argv);
-
-  if (try_catch.HasCaught()) {
-    Nan::FatalException(try_catch);
-  }
-
-  return;
-}
-#else
-NAN_METHOD(OpenCV::ReadImageMulti) {
-  info.GetReturnValue().Set(Nan::New<Boolean>(false));
-  return;
-}
+};
 #endif
+
+NAN_METHOD(OpenCV::ReadImageMulti) {
+#if CV_MAJOR_VERSION >= 3
+  Nan::EscapableHandleScope scope;
+
+  FUNCTION_MIN_ARGUMENTS(1, "readImage");
+
+  int argumentOffset = 1;
+  INT_FROM_ARGS(mode, 1) else {
+    mode = cv::IMREAD_ANYCOLOR;
+    argumentOffset = 0;
+  }
+
+  bool isCallback = false;
+  if (info.Length() > 1 + argumentOffset) {
+    if (!info[1 + argumentOffset]->IsFunction()) {
+      return THROW_INVALID_ARGUMENT_TYPE(1 + argumentOffset, "a function");
+    }
+
+    isCallback = true;
+  }
+
+  ASSERT_STRING_FROM_ARGS(path, 0);
+
+  ReadImageMultiAsyncWorker* worker = new ReadImageMultiAsyncWorker(path);
+
+  worker->SetImreadMode(static_cast<cv::ImreadModes>(mode));
+
+  if (isCallback) {
+    worker->SaveToPersistent(0u, info[1 + argumentOffset]);
+} else {
+    Local<Promise::Resolver> resolver = Promise::Resolver::New(Nan::GetCurrentContext()).ToLocalChecked();
+    worker->SaveToPersistent(0u, resolver);
+    info.GetReturnValue().Set(resolver->GetPromise());
+  }
+
+  Nan::AsyncQueueWorker(worker);
+#else
+  Nan::ThrowError("only supported in opencv 3.x")
+#endif
+}
+
+NAN_METHOD(OpenCV::ReadImageMultiSync) {
+#if CV_MAJOR_VERSION >= 3
+  Nan::EscapableHandleScope scope;
+
+  FUNCTION_MIN_ARGUMENTS(1, "readImage");
+  ASSERT_STRING_FROM_ARGS(path, 0);
+  DEFAULT_INT_FROM_ARGS(mode, 1, cv::IMREAD_ANYCOLOR);
+
+  ReadImageMultiAsyncWorker worker(path);
+  worker.SetImreadMode(static_cast<cv::ImreadModes>(mode));
+  worker.Execute();
+  info.GetReturnValue().Set(worker.GetResult());
+#else
+  Nan::ThrowError("only supported in opencv 3.x")
+#endif
+}

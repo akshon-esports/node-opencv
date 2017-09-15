@@ -7,6 +7,7 @@
 #include "OpenCV.h"
 #include <string.h>
 #include <nan.h>
+#include "Contour.h"
 
 Nan::Persistent<FunctionTemplate> Matrix::constructor;
 
@@ -160,6 +161,12 @@ NAN_METHOD(Matrix::New) {
 
 Local<Object> Matrix::NewInstance() {
   return Nan::NewInstance(Nan::GetFunction(Nan::New(constructor)).ToLocalChecked()).ToLocalChecked();
+}
+
+Local<Object> Matrix::NewInstance(cv::Mat &mat) {
+  Local<Object> inst = NewInstance();
+  UNWRAP_OBJ(Matrix, inst)->mat = mat;
+  return inst;
 }
 
 bool Matrix::HasInstance(Local<Value> object) {
@@ -901,33 +908,39 @@ NAN_METHOD(Matrix::Ellipse) {
 NAN_METHOD(Matrix::Rectangle) {
   SETUP_FUNCTION(Matrix)
 
-  if (info[0]->IsArray() && info[1]->IsArray()) {
-    Local < Object > xy = info[0]->ToObject();
-    Local < Object > width_height = info[1]->ToObject();
-
-    cv::Scalar color(0, 0, 255);
-
-    if (info[2]->IsArray()) {
-      Local < Object > objColor = info[2]->ToObject();
-      color = setColor(objColor);
-    }
-
-    int x = xy->Get(0)->IntegerValue();
-    int y = xy->Get(1)->IntegerValue();
-
-    int width = width_height->Get(0)->IntegerValue();
-    int height = width_height->Get(1)->IntegerValue();
-
-    int thickness = 1;
-
-    if (info[3]->IntegerValue())
-      thickness = info[3]->IntegerValue();
-
-    cv::rectangle(self->mat, cv::Point(x, y), cv::Point(x + width, y + height),
-        color, thickness);
+  if (info.Length() < 2) {
+    return Nan::ThrowError("Matrix.rectangle requires at least 2 argument");
   }
 
-  info.GetReturnValue().Set(Nan::Null());
+  int argumentOffset = 0;
+
+  cv::Rect rect;
+  try {
+    Local<Value> argv[] = { info[0] };
+    rect = Rect::RawRect(1, argv);
+  } catch(const char *) {
+    try {
+      Local<Value> argv[] = { info[0], info[1] };
+      rect = Rect::RawRect(2, argv);
+      argumentOffset = 1;
+    } catch (const char *) {
+      return Nan::ThrowError("Argument 1 must be a Rect");
+    }
+  }
+
+  cv::Scalar color;
+  try {
+    Local<Value> argv[] = { info[1 + argumentOffset] };
+    color = Scalar::RawScalar(1, argv);
+  } catch(const char *) {
+    return Nan::ThrowError(cv::format("Argument %d must be a Scalar", 2 + argumentOffset).c_str());
+  }
+
+  DEFAULT_INT_FROM_ARGS(thickness, 2 + argumentOffset, 1);
+  DEFAULT_INT_FROM_ARGS(lineType, 3 + argumentOffset, cv::LINE_8);
+  DEFAULT_INT_FROM_ARGS(shift, 4 + argumentOffset, 0);
+
+  cv::rectangle(self->mat, rect, color, thickness, lineType, shift);
 }
 
 NAN_METHOD(Matrix::Line) {
@@ -1300,14 +1313,16 @@ NAN_METHOD(Matrix::ROI) {
     return Nan::ThrowError("Matrix.roi requires at least 1 argument");
   }
 
+  SETUP_ARGC_AND_ARGV()
+
   cv::Rect rect;
   try {
-    SETUP_ARGC_AND_ARGV()
-
     rect = Rect::RawRect(argc, argv);
   } catch (const char* msg) {
+    delete[] argv;
     return Nan::ThrowTypeError(msg);
   }
+  delete[] argv;
 
   // Although it's an image to return, it is in fact a pointer to ROI of parent matrix
   Local<Object> out = NewInstance();
@@ -1526,12 +1541,31 @@ NAN_METHOD(Matrix::Canny) {
   Nan::HandleScope scope;
 
   Matrix *self = Nan::ObjectWrap::Unwrap<Matrix>(info.This());
+
+  if (info.Length() < 2) {
+    return Nan::ThrowError("Matrix.canny requires at least 2 parameters");
+  }
+
+  if (!info[0]->IsNumber()) {
+    return Nan::ThrowTypeError("Argument 1 must be a number");
+  }
+
   int lowThresh = info[0]->NumberValue();
+
+  if (!info[1]->IsNumber()) {
+    return Nan::ThrowTypeError("Argument 2 must be a number");
+  }
+
   int highThresh = info[1]->NumberValue();
 
-  cv::Canny(self->mat, self->mat, lowThresh, highThresh);
+  DEFAULT_INT_FROM_ARGS(apertureSize, 2, 3);
+  DEFAULT_BOOLEAN_FROM_ARGS(L2gradient, 3, false);
 
-  info.GetReturnValue().Set(Nan::Null());
+  Local<Object> out = NewInstance();
+
+  cv::Canny(self->mat, UNWRAP_OBJ(Matrix, out)->mat, lowThresh, highThresh, apertureSize, L2gradient);
+
+  info.GetReturnValue().Set(out);
 }
 
 NAN_METHOD(Matrix::Dilate) {
@@ -1568,76 +1602,55 @@ NAN_METHOD(Matrix::Erode) {
 }
 
 NAN_METHOD(Matrix::FindContours) {
-  Nan::HandleScope scope;
+  FUNCTION_MIN_ARGUMENTS(2, "Matrix.findContours()");
+  SETUP_FUNCTION(Matrix);
+  ASSERT_INT_FROM_ARGS(mode, 0);
+  ASSERT_INT_FROM_ARGS(chain, 1);
+  TRY_CATCH_POINT_FROM_ARGS(offset, 2, );
 
-  int mode = CV_RETR_LIST;
-  int chain = CV_CHAIN_APPROX_SIMPLE;
-
-  if (info.Length() > 0) {
-    if (info[0]->IsNumber()) mode = info[0]->IntegerValue();
+  std::vector<std::vector<cv::Point>> contours;
+  std::vector<cv::Vec4i> hierarchy;
+  try {
+    cv::findContours(self->mat, contours, hierarchy, mode, chain, offset);
+  } catch (cv::Exception e) {
+    return Nan::ThrowError(e.what());
   }
 
-  if (info.Length() > 1) {
-    if (info[1]->IsNumber()) chain = info[1]->IntegerValue();
-  }
-
-  Matrix *self = Nan::ObjectWrap::Unwrap<Matrix>(info.This());
-  Local<Object> conts_to_return = Nan::NewInstance(Nan::GetFunction(Nan::New(Contour::constructor)).ToLocalChecked()).ToLocalChecked();
-  Contour *contours = Nan::ObjectWrap::Unwrap<Contour>(conts_to_return);
-
-  cv::findContours(self->mat, contours->contours, contours->hierarchy, mode, chain);
-
-  info.GetReturnValue().Set(conts_to_return);
-
+  info.GetReturnValue().Set(Contours::NewInstance(contours, hierarchy));
 }
 
 NAN_METHOD(Matrix::DrawContour) {
-  Nan::HandleScope scope;
+  FUNCTION_MIN_ARGUMENTS(2, "Matrix.drawContour()");
+  SETUP_FUNCTION(Matrix);
+  ASSERT_CONTOUR_FROM_ARGS(cont, 0);
+  ASSERT_SCALAR_FROM_ARGS(color, 1);
+  DEFAULT_INT_FROM_ARGS(thickness, 2, 1);
+  DEFAULT_INT_FROM_ARGS(lineType, 3, cv::LINE_8);
+  DEFAULT_INT_FROM_ARGS(maxLevel, 4, INT_MAX);
+  TRY_CATCH_POINT_FROM_ARGS(offset, 5, );
 
-  Matrix *self = Nan::ObjectWrap::Unwrap<Matrix>(info.This());
-  Contour *cont = Nan::ObjectWrap::Unwrap<Contour>(info[0]->ToObject());
-  int pos = info[1]->NumberValue();
-  cv::Scalar color(0, 0, 255);
-
-  if (info[2]->IsArray()) {
-    Local<Object> objColor = info[2]->ToObject();
-    color = setColor(objColor);
+  try {
+    cv::drawContours(self->mat, cont->contours, cont->index, color, thickness, lineType, cont->hierarchy, maxLevel, offset);
+  } catch(cv::Exception e) {
+    Nan::ThrowError(e.what());
   }
-
-  int thickness = info.Length() < 4 ? 1 : info[3]->NumberValue();
-  int lineType = info.Length() < 5 ? 8 : info[4]->NumberValue();
-  int maxLevel = info.Length() < 6 ? 0 : info[5]->NumberValue();
-
-  cv::Point offset;
-  if (info.Length() == 6) {
-    Local<Array> _offset = Local<Array>::Cast(info[5]);
-    offset = cv::Point(
-            Nan::To<int>(Nan::Get(_offset, 0).ToLocalChecked()).FromJust(),
-            Nan::To<int>(Nan::Get(_offset, 1).ToLocalChecked()).FromJust()
-    );
-  }
-
-  cv::drawContours(self->mat, cont->contours, pos, color, thickness, lineType, cont->hierarchy, maxLevel, offset);
-
-  return;
 }
 
 NAN_METHOD(Matrix::DrawAllContours) {
-  Nan::HandleScope scope;
+  FUNCTION_MIN_ARGUMENTS(2, "Matrix.drawAllContours()");
+  SETUP_FUNCTION(Matrix);
+  ASSERT_CONTOUR_FROM_ARGS(cont, 0);
+  ASSERT_SCALAR_FROM_ARGS(color, 1);
+  DEFAULT_INT_FROM_ARGS(thickness, 2, 1);
+  DEFAULT_INT_FROM_ARGS(lineType, 3, cv::LINE_8);
+  DEFAULT_INT_FROM_ARGS(maxLevel, 4, INT_MAX);
+  TRY_CATCH_POINT_FROM_ARGS(offset, 5, );
 
-  Matrix *self = Nan::ObjectWrap::Unwrap<Matrix>(info.This());
-  Contour *cont = Nan::ObjectWrap::Unwrap<Contour>(info[0]->ToObject());
-  cv::Scalar color(0, 0, 255);
-
-  if (info[1]->IsArray()) {
-    Local<Object> objColor = info[1]->ToObject();
-    color = setColor(objColor);
+  try {
+    cv::drawContours(self->mat, cont->contours, -1, color, thickness, lineType, cont->hierarchy, maxLevel, offset);
+  } catch (cv::Exception e) {
+    Nan::ThrowError(e.what());
   }
-
-  int thickness = info.Length() < 3 ? 1 : info[2]->NumberValue();
-  cv::drawContours(self->mat, cont->contours, -1, color, thickness);
-
-  return;
 }
 
 NAN_METHOD(Matrix::GoodFeaturesToTrack) {
@@ -1874,13 +1887,9 @@ NAN_METHOD(Matrix::Resize) {
     return Nan::ThrowError("Area of size must be > 0");
   }
 
-  double fx = 0;
-  double fy = 0;
-  int interpolation = cv::INTER_LINEAR;
-
-  DOUBLE_FROM_ARGS(fx, 1)
-  DOUBLE_FROM_ARGS(fy, 2)
-  INT_FROM_ARGS(interpolation, 3)
+  DEFAULT_DOUBLE_FROM_ARGS(fx, 1, 0);
+  DEFAULT_DOUBLE_FROM_ARGS(fy, 2, 0);
+  DEFAULT_INT_FROM_ARGS(interpolation, 3, cv::INTER_LINEAR);
 
   Local<Object> res = NewInstance();
 
@@ -2208,8 +2217,7 @@ NAN_METHOD(Matrix::ConvertTo) {
   Matrix *dest = Nan::ObjectWrap::Unwrap<Matrix>(info[0]->ToObject());
 
   // param 1 - desired matrix type
-  int rtype = -1;
-  INT_FROM_ARGS(rtype, 1);
+  DEFAULT_INT_FROM_ARGS(rtype, 1, -1);
 
   // param 2 - alpha
   double alpha = 1;

@@ -1,4 +1,3 @@
-
 #include "Stereo.h"
 
 #if CV_MAJOR_VERSION >= 3

@@ -255,27 +255,22 @@ private:
 };
 
 NAN_METHOD(VideoCaptureWrap::Grab) {
-  Nan::HandleScope scope;
-  VideoCaptureWrap *v = Nan::ObjectWrap::Unwrap<VideoCaptureWrap>(info.This());
-
+  SETUP_FUNCTION(VideoCaptureWrap);
   REQ_FUN_ARG(0, cb);
 
   Nan::Callback *callback = new Nan::Callback(cb.As<Function>());
-  Nan::AsyncQueueWorker(new AsyncGrabWorker(callback, v));
+  Nan::AsyncQueueWorker(new AsyncGrabWorker(callback, self));
 
   return;
 }
 
 NAN_METHOD(VideoCaptureWrap::Retrieve) {
-  Nan::HandleScope scope;
-  VideoCaptureWrap *v = Nan::ObjectWrap::Unwrap<VideoCaptureWrap>(info.This());
-
-  int channel = 0;
+  SETUP_FUNCTION(VideoCaptureWrap);
   REQ_FUN_ARG(0, cb);
-  INT_FROM_ARGS(channel, 1);
+  DEFAULT_INT_FROM_ARGS(channel, 1, 0);
 
   Nan::Callback *callback = new Nan::Callback(cb.As<Function>());
-  Nan::AsyncQueueWorker(new AsyncVCWorker(callback, v, true, channel));
+  Nan::AsyncQueueWorker(new AsyncVCWorker(callback, self, true, channel));
 
   return;
 }
