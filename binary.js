@@ -1,5 +1,7 @@
+var path = require('path');
+
 module.exports = function() {
-  return './build/' + (process.env.NODE_OPENCV_DEBUG ? 'Debug' : 'Release');
+  return path.resolve(__dirname, 'build/' + (process.env.NODE_OPENCV_DEBUG ? 'Debug' : 'Release'));
 };
 
 module.exports.copyProperties = function(from, to, properties) {
