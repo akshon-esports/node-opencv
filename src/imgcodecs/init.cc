@@ -1,5 +1,4 @@
 #include "common.h"
-#include "Constants.h"
 
 #include "../core/Matrix.h"
 
