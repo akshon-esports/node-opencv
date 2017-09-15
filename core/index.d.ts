@@ -206,7 +206,8 @@ export declare class Matrix extends internal.CpuMatrix<Matrix> {
 
     public reserveBuffer(size: SizeLike): void;
 
-    public resize(size: SizeLike): void;
+    public resize(size: number): void;
+    public resize(size: number, scalar: ScalarLike): void;
 
     public pushBack(mat: Matrix): void;
 

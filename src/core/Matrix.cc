@@ -398,7 +398,20 @@ NAN_METHOD(Matrix::Dot) {
 }
 
 NAN_METHOD(Matrix::Create) {
-  NotImplemented(info);
+  FUNCTION_REQUIRE_ARGUMENTS_RANGE(2, 3);
+  SETUP_FUNCTION(Matrix);
+  if (info.Length() == 2 && info[1]->IsNumber()) {
+    try {
+      Local<Value> val = info[0];
+      cv::Size size = Size::RawSize(1, &val);
+      ASSERT_INT_FROM_ARGS(type, 1);
+      TRY_CATCH_THROW_OPENCV(self->mat.create(size, info[1]->NumberValue()));
+    } catch (char const*) {}
+  } else if (info.Length() == 3 && info[0]->IsNumber() && info[1]->IsNumber() && info[2]->IsNumber()) {
+    TRY_CATCH_THROW_OPENCV(self->mat.create(info[0]->NumberValue(), info[1]->NumberValue(), info[2]->NumberValue()));
+  }
+
+  return Nan::ThrowError(ERROR_INVALID_ARGUMENTS);
 }
 
 NAN_METHOD(Matrix::Release) {
@@ -417,7 +430,15 @@ NAN_METHOD(Matrix::ReserveBuffer) {
 
 
 NAN_METHOD(Matrix::Resize) {
-  NotImplemented(info);
+  FUNCTION_REQUIRE_ARGUMENTS_RANGE(1, 2);
+  SETUP_FUNCTION(Matrix);
+  ASSERT_INT_FROM_ARGS(size, 0);
+  if (info.Length() == 1) {
+    TRY_CATCH_THROW_OPENCV(self->mat.resize(size));
+  }
+
+  ASSERT_SCALAR_FROM_ARGS(scalar, 1);
+  TRY_CATCH_THROW_OPENCV(self->mat.resize(size), scalar);
 }
 
 NAN_METHOD(Matrix::PushBack) {

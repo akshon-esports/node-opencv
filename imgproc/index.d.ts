@@ -650,9 +650,3 @@ export const TM_CCOEFF: TemplateMatchModes;
 export const TM_CCOEFF_NORMED: TemplateMatchModes;
 
 export function matchTemplate(image: InputArray, templ: InputArray, result: OutputArray, method: TemplateMatchModes, mask?: InputArray /* = noArray() */): void;
-
-declare module "../core" {
-    interface Matrix {
-        matchTemplate(templ: InputArray, method?: TemplateMatchModes, mask?: InputArray): Matrix
-    }
-}
