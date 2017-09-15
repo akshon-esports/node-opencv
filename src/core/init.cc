@@ -5,6 +5,7 @@
 #include "Matrix.h"
 #include "UnifiedMatrix.h"
 #include "GpuMatrix.h"
+#include "array.h"
 
 NAN_METHOD(NotImplemented) {
   Nan::ThrowError("Not implemented");
@@ -227,6 +228,7 @@ extern "C" void init(Local<Object> target) {
   Matrix::Init(target);
   UnifiedMatrix::Init(target);
   GpuMatrix::Init(target);
+  ncv::core::ArrayInit(target);
 }
 
 NODE_MODULE(core, init);
