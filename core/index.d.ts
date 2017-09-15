@@ -36,6 +36,21 @@ export const REDUCE_MAX: ReduceTypes;
 export const REDUCE_MIN: ReduceTypes;
 
 /** Basic structures **/
+export type AccessFlags = number;
+export type UMatUsageFlags = number;
+
+export const ACCESS_READ: AccessFlags;
+export const ACCESS_WRITE: AccessFlags;
+export const ACCESS_RW: AccessFlags;
+export const ACCESS_MASK: AccessFlags;
+export const ACCESS_FAST: AccessFlags;
+
+export const USAGE_DEFAULT: UMatUsageFlags;
+export const USAGE_ALLOCATE_HOST_MEMORY: UMatUsageFlags;
+export const USAGE_ALLOCATE_DEVICE_MEMORY: UMatUsageFlags;
+export const USAGE_ALLOCATE_SHARED_MEMORY: UMatUsageFlags;
+export const __UMAT_USAGE_FLAGS_32BIT: UMatUsageFlags;
+
 export declare type InputArray = internal.BaseMatrix | MatrixExpression | number[];
 
 export declare type InputOutputArray = internal.BaseMatrix;
@@ -293,6 +308,9 @@ export declare class Rect {
 
     contains(rect: RectLike): boolean;
 }
+
+// TODO RotatedRect
+export declare class RotatedRect {}
 
 export declare type ScalarLike =
     Scalar
@@ -592,3 +610,47 @@ export declare function transpose(src: InputArray, dst: OutputArray): void;
 export declare function vconcat(src: InputArray[], dst: OutputArray): void;
 
 export declare const VERSION: string;
+
+export const CV_8U: MatrixType;
+export const CV_8S: MatrixType;
+export const CV_16U: MatrixType;
+export const CV_16S: MatrixType;
+export const CV_32S: MatrixType;
+export const CV_32F: MatrixType;
+export const CV_64F: MatrixType;
+export const CV_USRTYPE1: MatrixType;
+
+export const CV_8UC1: MatrixType;
+export const CV_8UC2: MatrixType;
+export const CV_8UC3: MatrixType;
+export const CV_8UC4: MatrixType;
+
+export const CV_8SC1: MatrixType;
+export const CV_8SC2: MatrixType;
+export const CV_8SC3: MatrixType;
+export const CV_8SC4: MatrixType;
+
+export const CV_16UC1: MatrixType;
+export const CV_16UC2: MatrixType;
+export const CV_16UC3: MatrixType;
+export const CV_16UC4: MatrixType;
+
+export const CV_16SC1: MatrixType;
+export const CV_16SC2: MatrixType;
+export const CV_16SC3: MatrixType;
+export const CV_16SC4: MatrixType;
+
+export const CV_32SC1: MatrixType;
+export const CV_32SC2: MatrixType;
+export const CV_32SC3: MatrixType;
+export const CV_32SC4: MatrixType;
+
+export const CV_32FC1: MatrixType;
+export const CV_32FC2: MatrixType;
+export const CV_32FC3: MatrixType;
+export const CV_32FC4: MatrixType;
+
+export const CV_64FC1: MatrixType;
+export const CV_64FC2: MatrixType;
+export const CV_64FC3: MatrixType;
+export const CV_64FC4: MatrixType;

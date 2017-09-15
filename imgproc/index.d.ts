@@ -1,4 +1,4 @@
-import { InputArray, InputOutputArray, Matrix, Moments, OutputArray,  Point, Rect, RotatedRect, Scalar, Size, TerminationCriteria } from '../core';
+import { InputArray, InputOutputArray, Matrix, OutputArray,  Point, Rect, RotatedRect, Scalar, Size, TerminationCriteria } from '../core';
 
 /** Image Filtering **/
 export type MorphShapes = number;
@@ -497,6 +497,9 @@ export function equalizeHist(src: InputArray, dst: OutputArray): void;
 // TODO export function wrapperEMD(signature1: InputArray, signature2: InputArray, distType: number, cost?: InputArray /* = noArray() */, lowerBound?: Ptr<float> /* = Ptr< float >() */, flow?: OutputArray /* = noArray() */): number;
 
 /** Structural Analysis and Shape Descriptors **/
+// TODO Moments
+export class Moments {}
+
 export class Contour {
     public parent(): Contour;
     public children(): Contour[];
