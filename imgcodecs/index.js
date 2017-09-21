@@ -3,7 +3,7 @@ var path = binary();
 var core = require(path + '/core.node');
 module.exports = require(path + '/imgcodecs.node');
 
-binary.copyProperties(module.exports, core.Matrix);
+binary.copyProperties(module.exports, core.Matrix, ['imread', 'imreadSync', 'imreadmulti', 'imreadmultiSync']);
 
 core.Matrix.prototype.imencode = function() {
   return module.exports.imencode.apply(global, arguments.splice(1, 0, this));

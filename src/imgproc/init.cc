@@ -38,7 +38,7 @@ namespace ncv {
       ObjectInit(target);
     }
 
-    NODE_MODULE(imgcodec, init);
+    NODE_MODULE(imgproc, init);
 
   }
 

@@ -3,7 +3,6 @@ var imgproc = require('../../../');
 
 core.Matrix.prototype.watershed = function() {
   var out = new core.Matrix();
-  arguments.splice(0, 0, this, out);
-  imgproc.watershed.apply(global, arguments);
+  imgproc.watershed.apply(global, [this, out].concat(Array.from(arguments)));
   return out;
 };

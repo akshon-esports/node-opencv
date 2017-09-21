@@ -63,31 +63,39 @@ NAN_METHOD(Rect::New) {
 }
 
 Local<Object> Rect::NewInstance(cv::Rect const &rect) {
+  Nan::EscapableHandleScope scope;
+
   UNWRAP_NEW_INSTANCE(Rect, r);
   r->rect = rect;
 
-  return inst;
+  return scope.Escape(inst);
 }
 
 Local<Object> Rect::NewInstance(cv::Point const &point, cv::Size const &size) {
+  Nan::EscapableHandleScope scope;
+
   UNWRAP_NEW_INSTANCE(Rect, r);
   r->rect = cv::Rect(point, size);
 
-  return inst;
+  return scope.Escape(inst);
 }
 
 Local<Object> Rect::NewInstance(cv::Point const &point1, cv::Point const &point2) {
+  Nan::EscapableHandleScope scope;
+
   UNWRAP_NEW_INSTANCE(Rect, r);
   r->rect = cv::Rect(point1, point2);
 
-  return inst;
+  return scope.Escape(inst);
 }
 
 Local<Object> Rect::NewInstance(int const &x, int const &y, int const &width, int const &height) {
+  Nan::EscapableHandleScope scope;
+
   UNWRAP_NEW_INSTANCE(Rect, r);
   r->rect = cv::Rect(x, y, width, height);
 
-  return inst;
+  return scope.Escape(inst);
 }
 
 cv::Rect Rect::RawRect(int const &argc, Local<Value>* const argv) {
@@ -146,7 +154,11 @@ cv::Rect Rect::RawRect(int const &argc, Local<Value>* const argv) {
       return cv::Rect(objValue_x->Int32Value(), objValue_y->Int32Value(), objValue_w->Int32Value(), objValue_h->Int32Value());
     }
 
-    if (argc == 2 && argv[0]->IsObject() && argv[1]->IsObject()) {
+    throw ERROR_INVALID_ARGUMENTS;
+  }
+
+  if (argc == 2) {
+    if (argv[0]->IsObject() && argv[1]->IsObject()) {
       try {
         cv::Point topLeft = Point::RawPoint(1, &argv[0]);
 

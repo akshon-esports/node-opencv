@@ -420,7 +420,7 @@ export function clipLine(imgSize: Size, pt1: Point, pt2: Point): boolean;
 export function clipLine(imgSize: Size, pt1: Point, pt2: Point): boolean;
 export function clipLine(imgRect: Rect, pt1: Point, pt2: Point): boolean;
 
-export function drawContours(image: InputOutputArray, contours: InputArray[], contourIdx: number, color: Scalar, thickness?: number /* = 1 */, lineType?: number /* = LINE_8 */, hierarchy?: InputArray /* = noArray() */, maxLevel?: number /* = INT_MAX */, offset?: Point /* = Point() */): void;
+export function drawContours(image: InputOutputArray, contours: Contours, contourIdx: number, color: Scalar, thickness?: number /* = 1 */, lineType?: number /* = LINE_8 */, maxLevel?: number /* = INT_MAX */, offset?: Point /* = Point() */): void;
 
 export function drawMarker(img: Matrix, position: Point, color: Scalar, markerType?: number /* = MARKER_CROSS */, markerSize?: number /* = 20 */, thickness?: number /* = 1 */, line_type?: number /* = 8 */): void;
 

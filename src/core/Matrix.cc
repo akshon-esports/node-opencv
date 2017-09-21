@@ -46,36 +46,36 @@ void Matrix::Init(Local<Object> target) {
   Nan::SetPrototypeMethod(ctor, "cross", Cross);
   Nan::SetPrototypeMethod(ctor, "dot", Dot);
 
-  Nan::SetPrototypeMethod(ctor, "Create", Create);
-  Nan::SetPrototypeMethod(ctor, "Release", Release);
+  Nan::SetPrototypeMethod(ctor, "create", Create);
+  Nan::SetPrototypeMethod(ctor, "release", Release);
 
-  Nan::SetPrototypeMethod(ctor, "Reserve", Reserve);
-  Nan::SetPrototypeMethod(ctor, "ReserveBuffer", ReserveBuffer);
+  Nan::SetPrototypeMethod(ctor, "reserve", Reserve);
+  Nan::SetPrototypeMethod(ctor, "reserveBuffer", ReserveBuffer);
 
-  Nan::SetPrototypeMethod(ctor, "Resize", Resize);
+  Nan::SetPrototypeMethod(ctor, "resize", Resize);
 
-  Nan::SetPrototypeMethod(ctor, "PushBack", PushBack);
-  Nan::SetPrototypeMethod(ctor, "PopBack", PopBack);
+  Nan::SetPrototypeMethod(ctor, "pushBack", PushBack);
+  Nan::SetPrototypeMethod(ctor, "popBack", PopBack);
 
-  Nan::SetPrototypeMethod(ctor, "LocateROI", LocateROI);
-  Nan::SetPrototypeMethod(ctor, "AdjustROI", AdjustROI);
+  Nan::SetPrototypeMethod(ctor, "locateROI", LocateROI);
+  Nan::SetPrototypeMethod(ctor, "adjustROI", AdjustROI);
 
-  Nan::SetPrototypeMethod(ctor, "IsContinuous", IsContinuous);
-  Nan::SetPrototypeMethod(ctor, "IsSubmatrix", IsSubmatrix);
+  Nan::SetPrototypeMethod(ctor, "isContinuous", IsContinuous);
+  Nan::SetPrototypeMethod(ctor, "isSubmatrix", IsSubmatrix);
 
-  Nan::SetPrototypeMethod(ctor, "ElemSize", ElemSize);
-  Nan::SetPrototypeMethod(ctor, "ElemSize1", ElemSize1);
+  Nan::SetPrototypeMethod(ctor, "elemSize", ElemSize);
+  Nan::SetPrototypeMethod(ctor, "elemSize1", ElemSize1);
 
-  Nan::SetPrototypeMethod(ctor, "Type", Type);
-  Nan::SetPrototypeMethod(ctor, "Depth", Depth);
-  Nan::SetPrototypeMethod(ctor, "Channels", Channels);
-  Nan::SetPrototypeMethod(ctor, "Step1", Step1);
-  Nan::SetPrototypeMethod(ctor, "Empty", Empty);
-  Nan::SetPrototypeMethod(ctor, "Total", Total);
+  Nan::SetPrototypeMethod(ctor, "type", Type);
+  Nan::SetPrototypeMethod(ctor, "depth", Depth);
+  Nan::SetPrototypeMethod(ctor, "channels", Channels);
+  Nan::SetPrototypeMethod(ctor, "step1", Step1);
+  Nan::SetPrototypeMethod(ctor, "empty", Empty);
+  Nan::SetPrototypeMethod(ctor, "total", Total);
 
-  Nan::SetPrototypeMethod(ctor, "Size", Size);
+  Nan::SetPrototypeMethod(ctor, "size", Size);
 
-  Nan::Set(target, Nan::New("Matrix").ToLocalChecked(), ctor->GetFunction());
+  Nan::Set(target, Nan::New("Matrix").ToLocalChecked(), Nan::GetFunction(ctor).ToLocalChecked());
 }
 
 NAN_METHOD(Matrix::New) {
@@ -104,11 +104,11 @@ NAN_METHOD(Matrix::New) {
 }
 
 Local<Object> Matrix::NewInstance(cv::Mat mat) {
-  Nan::HandleScope scope;
+  Nan::EscapableHandleScope scope;
 
   UNWRAP_NEW_INSTANCE(Matrix, m);
   m->mat = mat;
-  return inst;
+  return scope.Escape(inst);
 }
 
 cv::Mat Matrix::RawMatrix(int const&argc, Local<Value>* const argv) {

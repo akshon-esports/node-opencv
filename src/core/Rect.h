@@ -25,6 +25,11 @@ public:
 
   static cv::Rect RawRect(int const &argc, Local<Value>* const argv);
 
+  static GENERIC_NAMED_PROPERTY_GETTER(NamedPropertyGetter);
+  static GENERIC_NAMED_PROPERTY_SETTER(NamedPropertySetter);
+  static GENERIC_NAMED_PROPERTY_QUERY(NamedPropertyQuery);
+  static GENERIC_NAMED_PROPERTY_ENUMERATOR(NamedPropertyEnumerator);
+
   static NAN_GETTER(Getter);
   static NAN_SETTER(Setter);
 

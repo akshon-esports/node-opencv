@@ -54,18 +54,22 @@ NAN_METHOD(Range::New) {
 }
 
 Local<Object> Range::NewInstance(cv::Range const &range) {
+  Nan::EscapableHandleScope scope;
+
   UNWRAP_NEW_INSTANCE(Range, r);
   r->range = range;
 
-  return inst;
+  return scope.Escape(inst);
 }
 
 Local<Object> Range::NewInstance(int const &start, int const &end) {
+  Nan::EscapableHandleScope scope;
+
   UNWRAP_NEW_INSTANCE(Range, r);
   r->range.start = start;
   r->range.end = end;
 
-  return inst;
+  return scope.Escape(inst);
 }
 
 cv::Range Range::RawRange(int const &argc, Local<Value>* const argv) {

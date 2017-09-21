@@ -51,17 +51,18 @@ export const USAGE_ALLOCATE_DEVICE_MEMORY: UMatUsageFlags;
 export const USAGE_ALLOCATE_SHARED_MEMORY: UMatUsageFlags;
 export const __UMAT_USAGE_FLAGS_32BIT: UMatUsageFlags;
 
-export declare type InputArray = internal.BaseMatrix | MatrixExpression | number[];
+declare type AnyMatrix = Matrix | UnifiedMatrix | GpuMatrix;
 
-export declare type InputOutputArray = internal.BaseMatrix;
+export declare type InputArray = AnyMatrix | MatrixExpression | Scalar | number[] | number;
 
-export declare type OutputArray = internal.BaseMatrix;
+export declare type InputOutputArray = AnyMatrix;
+
+export declare type OutputArray = AnyMatrix;
 
 export declare type MatrixType = number;
-export declare type DecompTypes = number;
 
 declare namespace internal {
-    abstract class BaseMatrix<Mat extends BaseMatrix> {
+    abstract class BaseMatrix<Mat extends BaseMatrix<Mat>> {
         public flags: number;
 
         public rows: number;
@@ -110,7 +111,7 @@ declare namespace internal {
         public empty(): boolean;
     }
 
-    abstract class CpuMatrix<Mat extends CpuMatrix> extends BaseMatrix<Mat> {
+    abstract class CpuMatrix<Mat extends CpuMatrix<Mat>> extends BaseMatrix<Mat> {
         public dims: number;
 
         public diag(d: number): Mat;
@@ -223,18 +224,19 @@ export declare class GpuStream {
 }
 
 export declare class GpuMatrix extends internal.BaseMatrix<GpuMatrix> {
-    public convertTo: {
-        (rtype: MatrixType, scale: number, delta: number): GpuMatrix;
-        (rtype: MatrixType, stream: GpuStream): Promise<GpuMatrix>;
-        (rtype: MatrixType, scale: number, stream: GpuStream): Promise<GpuMatrix>;
-        (rtype: MatrixType, scale: number, delta: number, stream: GpuStream): Promise<GpuMatrix>;
-        (rtype: MatrixType, stream: GpuStream, callback: (err: Error, out: GpuMatrix) => void): void;
-        (rtype: MatrixType, scale: number, stream: GpuStream, callback: (err: Error, out: GpuMatrix) => void): void;
-        (rtype: MatrixType, scale: number, delta: number, stream: GpuStream, callback: (err: Error, out: GpuMatrix) => void): void;
-    };
-    public setTo: {
-        (value: ScalarLike, mask?: InputArray): void; (value: ScalarLike, stream: GpuStream): Promise<void>; (value: ScalarLike, mask: InputArray, stream: GpuStream): Promise<void>; (value: ScalarLike, stream: GpuStream, callback: (err: Error) => void): void; (value: ScalarLike, mask: InputArray, stream: GpuStream, callback: (err: Error) => void): void;
-    };
+    public convertTo(rtype: MatrixType, scale: number, delta: number): GpuMatrix;
+    public convertTo(rtype: MatrixType, stream: GpuStream): Promise<GpuMatrix>;
+    public convertTo(rtype: MatrixType, scale: number, stream: GpuStream): Promise<GpuMatrix>;
+    public convertTo(rtype: MatrixType, scale: number, delta: number, stream: GpuStream): Promise<GpuMatrix>;
+    public convertTo(rtype: MatrixType, stream: GpuStream, callback: (err: Error, out: GpuMatrix) => void): void;
+    public convertTo(rtype: MatrixType, scale: number, stream: GpuStream, callback: (err: Error, out: GpuMatrix) => void): void;
+    public convertTo(rtype: MatrixType, scale: number, delta: number, stream: GpuStream, callback: (err: Error, out: GpuMatrix) => void): void;
+
+    public setTo(value: ScalarLike, mask?: InputArray): void;
+    public setTo(value: ScalarLike, stream: GpuStream): Promise<void>;
+    public setTo(value: ScalarLike, mask: InputArray, stream: GpuStream): Promise<void>;
+    public setTo(value: ScalarLike, stream: GpuStream, callback: (err: Error) => void): void;
+    public setTo(value: ScalarLike, mask: InputArray, stream: GpuStream, callback: (err: Error) => void): void;
 }
 
 export declare type _PointLike = Point | {

@@ -22,20 +22,43 @@ namespace ncv {
       NotImplemented(info);
     }
 
-    NAN_METHOD(Bitwise_And) {
-      NotImplemented(info);
+    NAN_METHOD(BitwiseAnd) {
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(3, 4);
+      Nan::HandleScope scope;
+      ASSERT_INPUTARRAY_FROM_ARGS(src1, 0);
+      ASSERT_INPUTARRAY_FROM_ARGS(src2, 1);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 2);
+      DEFAULT_INPUTARRAY_FROM_ARGS(mask, 3, cv::noArray());
+      TRY_CATCH_THROW_OPENCV(cv::bitwise_and(src1, src2, dst, mask));
     }
 
-    NAN_METHOD(Bitwise_Not) {
-      NotImplemented(info);
+    NAN_METHOD(BitwiseNot) {
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(2, 3);
+      Nan::HandleScope scope;
+      ASSERT_INPUTARRAY_FROM_ARGS(src1, 0);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+      DEFAULT_INPUTARRAY_FROM_ARGS(mask, 2, cv::noArray());
+      TRY_CATCH_THROW_OPENCV(cv::bitwise_not(src1, dst, mask));
     }
 
-    NAN_METHOD(Bitwise_Or) {
-      NotImplemented(info);
+    NAN_METHOD(BitwiseOr) {
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(3, 4);
+      Nan::HandleScope scope;
+      ASSERT_INPUTARRAY_FROM_ARGS(src1, 0);
+      ASSERT_INPUTARRAY_FROM_ARGS(src2, 1);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 2);
+      DEFAULT_INPUTARRAY_FROM_ARGS(mask, 3, cv::noArray());
+      TRY_CATCH_THROW_OPENCV(cv::bitwise_or(src1, src2, dst, mask));
     }
 
-    NAN_METHOD(Bitwise_Xor) {
-      NotImplemented(info);
+    NAN_METHOD(BitwiseXor) {
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(3, 4);
+      Nan::HandleScope scope;
+      ASSERT_INPUTARRAY_FROM_ARGS(src1, 0);
+      ASSERT_INPUTARRAY_FROM_ARGS(src2, 1);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 2);
+      DEFAULT_INPUTARRAY_FROM_ARGS(mask, 3, cv::noArray());
+      TRY_CATCH_THROW_OPENCV(cv::bitwise_xor(src1, src2, dst, mask));
     }
 
     NAN_METHOD(BorderInterpolate) {
@@ -111,7 +134,11 @@ namespace ncv {
     }
 
     NAN_METHOD(Flip) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS(3);
+      ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+      ASSERT_INT_FROM_ARGS(flipCode, 2);
+      TRY_CATCH_THROW_OPENCV(cv::flip(src, dst, flipCode));
     }
 
     NAN_METHOD(Gemm) {
@@ -135,7 +162,13 @@ namespace ncv {
     }
 
     NAN_METHOD(InRange) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS(4);
+      Nan::HandleScope scope;
+      ASSERT_INPUTARRAY_FROM_ARGS(src1, 0);
+      ASSERT_INPUTARRAY_FROM_ARGS(lowerb, 1);
+      ASSERT_INPUTARRAY_FROM_ARGS(upperb, 2);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 3);
+      TRY_CATCH_THROW_OPENCV(cv::inRange(src1, lowerb, upperb, dst));
     }
 
     NAN_METHOD(InsertChannel) {
@@ -433,10 +466,10 @@ namespace ncv {
       Nan::SetMethod(target, "add", Add);
       Nan::SetMethod(target, "addWeighted", AddWeighted);
       Nan::SetMethod(target, "batchDistance", BatchDistance);
-      Nan::SetMethod(target, "bitwiseAnd", Bitwise_And);
-      Nan::SetMethod(target, "bitwiseNot", Bitwise_Not);
-      Nan::SetMethod(target, "bitwiseOr", Bitwise_Or);
-      Nan::SetMethod(target, "bitwiseXor", Bitwise_Xor);
+      Nan::SetMethod(target, "bitwiseAnd", BitwiseAnd);
+      Nan::SetMethod(target, "bitwiseNot", BitwiseNot);
+      Nan::SetMethod(target, "bitwiseOr", BitwiseOr);
+      Nan::SetMethod(target, "bitwiseXor", BitwiseXor);
       Nan::SetMethod(target, "borderInterpolate", BorderInterpolate);
       Nan::SetMethod(target, "calcCovarMatrix", CalcCovarMatrix);
       Nan::SetMethod(target, "cartToPolar", CartToPolar);

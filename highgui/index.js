@@ -1,5 +1,5 @@
 var path = require('../binary')();
-var highgui = module.exports = require(path + '/core.node') && require(path + '/imgcodecs.node');
+var highgui = module.exports = require(path + '/core.node') && require(path + '/highgui.node');
 
 var TrackerBar = function(winname, trackbarname) {
   this.windowName = winname;

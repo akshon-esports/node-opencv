@@ -52,18 +52,22 @@ NAN_METHOD(Size::New) {
 }
 
 Local<Object> Size::NewInstance(cv::Size const &size) {
+  Nan::EscapableHandleScope scope;
+
   UNWRAP_NEW_INSTANCE(Size, sz);
   sz->size = size;
 
-  return inst;
+  return scope.Escape(inst);
 }
 
 Local<Object> Size::NewInstance(int const &width, int const &height) {
+  Nan::EscapableHandleScope scope;
+
   UNWRAP_NEW_INSTANCE(Size, sz);
   sz->size.width = width;
   sz->size.height = height;
 
-  return inst;
+  return scope.Escape(inst);
 }
 
 cv::Size Size::RawSize(int const &argc, Local<Value>* const argv) {
@@ -131,9 +135,8 @@ cv::Size Size::RawSize(int const &argc, Local<Value>* const argv) {
 }
 
 NAN_GETTER(Size::Getter) {
-  SETUP_FUNCTION(Size);
-
   std::string name = *Nan::Utf8String(property);
+  Size* self = UNWRAP_OBJECT(Size, info.Holder());
   if (name == OBJECT_KEY_WIDTH) {
     info.GetReturnValue().Set(Nan::New<Number>(self->size.width));
   } else if (name == OBJECT_KEY_HEIGHT) {
@@ -142,12 +145,11 @@ NAN_GETTER(Size::Getter) {
 }
 
 NAN_SETTER(Size::Setter) {
-  SETUP_FUNCTION(Size);
-
   if (!value->IsNumber()) {
     return Nan::ThrowTypeError("value must be a number");
   }
 
+  Size* self = UNWRAP_OBJECT(Size, info.Holder());
   std::string name = *Nan::Utf8String(property);
   if (name == OBJECT_KEY_WIDTH) {
     self->size.width = value->Int32Value();

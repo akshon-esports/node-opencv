@@ -27,7 +27,7 @@ namespace ncv {
       FUNCTION_REQUIRE_ARGUMENTS_RANGE(4, 6);
       Nan::HandleScope scope;
       ASSERT_INPUTARRAY_FROM_ARGS(m1, 0);
-      unsigned argumentOffset = 0;
+      int argumentOffset = 0;
       cv::_InputArray m2;
       cv::_OutputArray out;
       try {
@@ -49,9 +49,9 @@ namespace ncv {
 
       if (argumentOffset == 0) {
         DEFAULT_INT_FROM_ARGS(apertureSize, 4, 3);
-        cv::Canny(m1, out, threshold1, threshold2, apertureSize, L2gradient);
+        TRY_CATCH_THROW_OPENCV(cv::Canny(m1, out, threshold1, threshold2, apertureSize, L2gradient));
       } else {
-        cv::Canny(m1, m2, out, threshold1, threshold2, L2gradient);
+        TRY_CATCH_THROW_OPENCV(cv::Canny(m1, m2, out, threshold1, threshold2, L2gradient));
       }
     }
 

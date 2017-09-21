@@ -44,14 +44,15 @@ using namespace node;
   FUNCTION_REQUIRE_ARGUMENTS_CUSTOM(info.Length() != COUNT, std::to_string(COUNT)) \
 
 #define FUNCTION_REQUIRE_ARGUMENTS_MIN(COUNT) \
-  FUNCTION_REQUIRE_ARGUMENTS_CUSTOM(info.Length() < COUNT, cv::format("at least %d", COUNT)) \
+  FUNCTION_REQUIRE_ARGUMENTS_CUSTOM(info.Length() < COUNT, cv::format("at least %d", COUNT).c_str()) \
 
 #define FUNCTION_REQUIRE_ARGUMENTS_RANGE(COUNT_MIN, COUNT_MAX) \
-  FUNCTION_REQUIRE_ARGUMENTS_CUSTOM(info.Length() < COUNT_MIN || info.Length() > COUNT_MAX, cv::format("%d-%d", COUNT_MIN, COUNT_MAX)) \
+  FUNCTION_REQUIRE_ARGUMENTS_CUSTOM(info.Length() < COUNT_MIN || info.Length() > COUNT_MAX, cv::format("%d-%d", COUNT_MIN, COUNT_MAX).c_str()) \
 
 #define NEW_INSTANCE_DEF \
   static inline Local<Object> NewInstance() { \
-    return Nan::NewInstance(Nan::GetFunction(Nan::New(constructor)).ToLocalChecked()).ToLocalChecked(); \
+    Nan::EscapableHandleScope scope;\
+    return scope.Escape(Nan::NewInstance(Nan::GetFunction(Nan::New(constructor)).ToLocalChecked()).ToLocalChecked()); \
   };
 
 #define HAS_INSTANCE_DEF \
@@ -150,5 +151,11 @@ using namespace node;
 
 #define DEFINE_CONST_ENUM(C) \
   Nan::Set(target, Nan::New<String>(#C).ToLocalChecked(), Nan::New<Integer>((int)(cv::C)));
+
+#define GENERIC_NAMED_PROPERTY_GETTER(name) void name(Local<Name> property, const PropertyCallbackInfo<Value> &info)
+#define GENERIC_NAMED_PROPERTY_SETTER(name) void name(Local<Name> property, Local<Value> value, const PropertyCallbackInfo<Value> &info)
+#define GENERIC_NAMED_PROPERTY_QUERY(name) void name(Local<Name> property, const PropertyCallbackInfo<Integer> &info)
+#define GENERIC_NAMED_PROPERTY_DELETER(name) void name(Local<Name> property, Local<Value> value, const PropertyCallbackInfo<Value> &info)
+#define GENERIC_NAMED_PROPERTY_ENUMERATOR(name) void name(const PropertyCallbackInfo<Array> &info)
 
 #endif // __COMMON_H__

@@ -96,9 +96,8 @@ public:
   }
 
   Local<Value> GetResult() {
-    Nan::HandleScope scope;
-
-    return Matrix::NewInstance(mat);
+    Nan::EscapableHandleScope scope;
+    return scope.Escape(Matrix::NewInstance(mat));
   }
 
 private:
@@ -361,8 +360,8 @@ extern "C" void init(Local<Object> target) {
 
   Nan::SetMethod(target, "imread", ImageRead);
   Nan::SetMethod(target, "imreadSync", ImageReadSync);
-  Nan::SetMethod(target, "imdecode", NotImplemented);
-  Nan::SetMethod(target, "imdecodeSync", NotImplemented);
+  Nan::SetMethod(target, "imdecode", ImageDecode);
+  Nan::SetMethod(target, "imdecodeSync", ImageDecodeSync);
   Nan::SetMethod(target, "imencode", NotImplemented);
   Nan::SetMethod(target, "imencodeSync", NotImplemented);
   Nan::SetMethod(target, "imreadmulti", ImageReadMulti);

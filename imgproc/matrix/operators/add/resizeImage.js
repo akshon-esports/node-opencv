@@ -3,7 +3,6 @@ var imgproc = require('../../../');
 
 core.Matrix.prototype.resizeImage = function() {
   var out = new core.Matrix();
-  arguments.splice(0, 0, this, out);
-  imgproc.resize.apply(global, arguments);
+  imgproc.resize.apply(global, [this, out].concat(Array.from(arguments)));
   return out;
 };

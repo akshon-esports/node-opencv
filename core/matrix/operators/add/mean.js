@@ -1,6 +1,5 @@
 var core = require('../../../');
 
-core.Matrix.prototype.minMaxLoc = function() {
-  arguments.splice(0, 0, this);
-  return core.mean.apply(global, arguments);
+core.Matrix.prototype.mean = function() {
+  return core.mean.apply(global, [this].concat(Array.from(arguments)));
 };

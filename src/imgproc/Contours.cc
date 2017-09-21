@@ -18,6 +18,7 @@ void Contours::Init(Local<Object> target) {
   Local<ObjectTemplate> inst = ctor->InstanceTemplate();
   inst->SetInternalFieldCount(1);
   Nan::SetIndexedPropertyHandler(inst, IndexGetter, 0, IndexQuery, 0, IndexEnumerator);
+  Nan::SetAccessor(inst, Nan::New<String>("length").ToLocalChecked(), LengthGetter);
 
   target->Set(Nan::New("Contours").ToLocalChecked(), ctor->GetFunction());
 };
@@ -36,13 +37,15 @@ NAN_METHOD(Contours::New) {
 }
 
 Local<Object> Contours::NewInstance(const std::vector<std::vector<cv::Point>> &contours, const std::vector<cv::Vec4i> &hierarchy) {
+  Nan::EscapableHandleScope scope;
+
   Local<Object> inst = NewInstance();
 
   Contours *contour = UNWRAP_OBJECT(Contours, inst);
   contour->contours = contours;
   contour->hierarchy = hierarchy;
 
-  return inst;
+  return scope.Escape(inst);
 }
 
 NAN_INDEX_GETTER(Contours::IndexGetter) {
@@ -65,4 +68,9 @@ NAN_INDEX_ENUMERATOR(Contours::IndexEnumerator) {
     Nan::Set(arr, i, Nan::New(std::to_string(i)).ToLocalChecked());
   }
   info.GetReturnValue().Set(arr);
+}
+
+NAN_GETTER(Contours::LengthGetter) {
+  Contours *self = UNWRAP_OBJECT(Contours, info.This());
+  info.GetReturnValue().Set(Nan::New<Number>(self->contours.size()));
 }

@@ -85,7 +85,7 @@ namespace ncv {
       FUNCTION_REQUIRE_ARGUMENTS(2);
       Nan::HandleScope scope;
       ASSERT_STRING_FROM_ARGS(winname, 0);
-      ASSERT_MATRIX_FROM_ARGS(mat, 0);
+      ASSERT_MATRIX_FROM_ARGS(mat, 1);
       TRY_CATCH_THROW_OPENCV(cv::imshow(winname, mat->mat));
     }
 
@@ -237,9 +237,9 @@ namespace ncv {
     }
 
     NAN_METHOD(WaitKey) {
-      FUNCTION_REQUIRE_ARGUMENTS(1);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(0, 1);
       Nan::HandleScope scope;
-      ASSERT_INT_FROM_ARGS(delay, 0);
+      DEFAULT_INT_FROM_ARGS(delay, 0, 0);
       TRY_CATCH_THROW_OPENCV(Nan::New<Number>(cv::waitKey(delay)));
     }
 

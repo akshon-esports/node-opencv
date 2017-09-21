@@ -13,7 +13,7 @@ char const* const ERROR_INVALID_ARGUMENTS = "Invalid arguments";
 char const* const OBJECT_KEY_X = "x";
 char const* const OBJECT_KEY_Y = "y";
 char const* const OBJECT_KEY_WIDTH = "width";
-char const* const OBJECT_KEY_HEIGHT = "width";
+char const* const OBJECT_KEY_HEIGHT = "height";
 char const* const OBJECT_KEY_START = "start";
 char const* const OBJECT_KEY_END = "end";
 

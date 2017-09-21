@@ -79,8 +79,14 @@ cv::_InputArray ReadInputArray(Local<Value> value) {
 //    }
   }
 
-  if (value->IsObject() && Matrix::HasInstance(value)) {
-    return UNWRAP_OBJECT(Matrix, value->ToObject())->mat;
+  if (value->IsObject()) {
+    if (Scalar::HasInstance(value)) {
+      return UNWRAP_OBJECT(Scalar, value->ToObject())->scalar;
+    }
+
+    if (Matrix::HasInstance(value)) {
+      return UNWRAP_OBJECT(Matrix, value->ToObject())->mat;
+    }
   }
 
   // TODO add condition for MatrixExpression, GpuMatrix and UnifiedMatrix

@@ -24,7 +24,7 @@ namespace ncv {
       ASSERT_OUTPUTARRAY_FROM_ARGS(result, 2);
       ASSERT_INT_FROM_ARGS(method, 3);
       DEFAULT_OUTPUTARRAY_FROM_ARGS(mask, 4, cv::noArray());
-      cv::matchTemplate(image, templ, result, method, mask);
+      TRY_CATCH_THROW_OPENCV(cv::matchTemplate(image, templ, result, method, mask));
     }
 
   }

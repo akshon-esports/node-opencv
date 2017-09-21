@@ -51,20 +51,24 @@ NAN_METHOD(Scalar::New) {
 }
 
 Local<Object> Scalar::NewInstance(cv::Scalar const &scalar) {
+  Nan::EscapableHandleScope scope;
+
   UNWRAP_NEW_INSTANCE(Scalar, s);
   s->scalar = scalar;
 
-  return inst;
+  return scope.Escape(inst);
 }
 
 Local<Object> Scalar::NewInstance(double const &v0, double const &v1, double const &v2, double const &v3) {
+  Nan::EscapableHandleScope scope;
+
   UNWRAP_NEW_INSTANCE(Scalar, s);
   s->scalar[0] = v0;
   s->scalar[1] = v1;
   s->scalar[2] = v2;
   s->scalar[3] = v3;
 
-  return inst;
+  return scope.Escape(inst);
 }
 
 cv::Scalar Scalar::RawScalar(int const &argc, Local<Value>* const argv) {

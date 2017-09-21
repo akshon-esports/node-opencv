@@ -9,15 +9,6 @@ namespace ncv {
 
     void MiscInit(Local<Object> &target);
 
-    NAN_METHOD(AdaptiveThreshold);
-    NAN_METHOD(CvtColor);
-    NAN_METHOD(DistanceTransform);
-    NAN_METHOD(FloodFill);
-    NAN_METHOD(GrabCut);
-    NAN_METHOD(Integral);
-    NAN_METHOD(Threshold);
-    NAN_METHOD(Watershed);
-
   }
 
 }

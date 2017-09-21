@@ -48,20 +48,24 @@ NAN_METHOD(Point::New) {
 }
 
 Local<Object> Point::NewInstance(cv::Point const &point) {
+  Nan::EscapableHandleScope scope;
+
   Local<Object> obj = NewInstance();
   Point *pt = UNWRAP_OBJECT(Point, obj);
   pt->point = point;
 
-  return obj;
+  return scope.Escape(obj);
 }
 
 Local<Object> Point::NewInstance(int const &x, int const &y) {
+  Nan::EscapableHandleScope scope;
+
   Local<Object> obj = NewInstance();
   Point *pt = UNWRAP_OBJECT(Point, obj);
   pt->point.x = x;
   pt->point.y = y;
 
-  return obj;
+  return scope.Escape(obj);
 }
 
 cv::Point Point::RawPoint(int const &argc, Local<Value>* const argv) {

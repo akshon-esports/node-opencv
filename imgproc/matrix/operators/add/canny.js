@@ -3,7 +3,6 @@ var imgproc = require('../../../');
 
 core.Matrix.prototype.canny = function() {
   var out = new core.Matrix();
-  arguments.splice(0, 0, this, out);
-  imgproc.canny.apply(global, arguments);
+  imgproc.canny.apply(global, [this, out].concat(Array.from(arguments)));
   return out;
 };

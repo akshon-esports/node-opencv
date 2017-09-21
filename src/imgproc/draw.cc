@@ -2,6 +2,7 @@
 #include "../core/Point.h"
 #include "../core/Rect.h"
 #include "../core/Scalar.h"
+#include "Contour.h"
 
 namespace ncv {
 
@@ -46,7 +47,17 @@ namespace ncv {
     }
 
     NAN_METHOD(DrawContours) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(4, 8);
+      Nan::HandleScope scope;
+      ASSERT_INPUTOUTPUTARRAY_FROM_ARGS(img, 0);
+      ASSERT_CONTOUR_FROM_ARGS(contours, 1);
+      ASSERT_INT_FROM_ARGS(idx, 2);
+      ASSERT_SCALAR_FROM_ARGS(color, 3);
+      DEFAULT_INT_FROM_ARGS(thickness, 4, 1);
+      DEFAULT_INT_FROM_ARGS(lineType, 5, cv::LINE_8);
+      DEFAULT_INT_FROM_ARGS(maxLevel, 6, INT_MAX);
+      DEFAULT_POINT_FROM_ARGS(offset, 7, cv::Point());
+      TRY_CATCH_THROW_OPENCV(cv::drawContours(img, contours->contours, idx, color, thickness, lineType, contours->hierarchy, maxLevel, offset));
     }
 
     NAN_METHOD(DrawMarker) {
@@ -88,7 +99,7 @@ namespace ncv {
     NAN_METHOD(Rectangle) {
       FUNCTION_REQUIRE_ARGUMENTS_RANGE(2, 6);
       Nan::HandleScope scope;
-      unsigned argumentOffset = 0;
+      int argumentOffset = 0;
       ASSERT_INPUTOUTPUTARRAY_FROM_ARGS(img, 0);
 
       Local<Value> v1 = info[1];

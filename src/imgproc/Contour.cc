@@ -59,16 +59,20 @@ NAN_METHOD(Contour::New) {
 }
 
 Local<Object> Contour::NewInstance(const std::vector<cv::Point> &in) {
+  Nan::EscapableHandleScope scope;
+
   Local<Object> inst = Nan::NewInstance(Nan::GetFunction(Nan::New(constructor)).ToLocalChecked()).ToLocalChecked();
 
   Contour *contour = UNWRAP_OBJECT(Contour, inst);
   contour->contours.push_back(in);
   contour->hierarchy.push_back(cv::Vec4i::all(-1));
 
-  return inst;
+  return scope.Escape(inst);
 }
 
 Local<Object> Contour::NewInstance(const std::vector<std::vector<cv::Point>> &contours, const std::vector<cv::Vec4i> &hierarchy, int index) {
+  Nan::EscapableHandleScope scope;
+
   Local<Object> inst = Nan::NewInstance(Nan::GetFunction(Nan::New(constructor)).ToLocalChecked()).ToLocalChecked();
 
   Contour *contour = UNWRAP_OBJECT(Contour, inst);
@@ -76,7 +80,7 @@ Local<Object> Contour::NewInstance(const std::vector<std::vector<cv::Point>> &co
   contour->hierarchy = hierarchy;
   contour->index = index;
 
-  return inst;
+  return scope.Escape(inst);
 }
 
 bool Contour::HasInstance(Local<Value> object) {

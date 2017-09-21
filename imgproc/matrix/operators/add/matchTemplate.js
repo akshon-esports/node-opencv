@@ -2,9 +2,10 @@ var core = require('../../../../core');
 var imgproc = require('../../../');
 
 core.Matrix.prototype.matchTemplate = function() {
-  arguments.splice(0, 0, this);
   var out = new core.Matrix();
-  arguments.splice(2, 0, out);
-  imgproc.matchTemplate.apply(global, arguments);
+  var args = Array.from(arguments);
+  args.splice(1, 0, out);
+  args.splice(0, 0, this);
+  core.matchTemplate.apply(global, args);
   return out;
 };
