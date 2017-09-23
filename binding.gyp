@@ -490,5 +490,79 @@
         }]
       ],
     },
+    {
+      "target_name": "text",
+
+      "dependencies": [ "core" ],
+
+      "sources": [
+        "src/text/OCRTesseract.cc",
+        "src/text/init.cc",
+      ],
+
+      "libraries": [
+        "<!@(node utils/find-opencv.js --libs)",
+      ],
+
+      "include_dirs": [
+        "<!@(node utils/find-opencv.js --cflags)",
+        "<!(node -e \"require('nan')\")"
+      ],
+
+      "cflags!" : [ "-fno-exceptions"],
+      "cflags_cc!": [ "-fno-rtti",  "-fno-exceptions"],
+
+      "configurations": {
+        "Debug": {
+          "defines": [
+            "NODE_OPENCV_DEBUG=1"
+          ],
+        }
+      },
+
+      "conditions": [
+        [ "OS!=\"win\"", {
+          "libraries": [
+            "<(module_root_dir)/build/Release/core.a"
+          ],
+        }],
+        [ "OS==\"linux\" or OS==\"freebsd\" or OS==\"openbsd\" or OS==\"solaris\" or OS==\"aix\"", {
+          "cflags": [
+            "<!@(node utils/find-opencv.js --cflags)",
+            "-Wall"
+          ]
+        }],
+        [ "OS==\"win\"", {
+          "cflags": [
+            "-Wall"
+          ],
+          "defines": [
+              "WIN"
+          ],
+          "libraries": [
+            "<(module_root_dir)/build/Release/core.lib"
+          ],
+          "msvs_settings": {
+            "VCCLCompilerTool": {
+              "ExceptionHandling": "2",
+              "DisableSpecificWarnings": [ "4530", "4506", "4244" ],
+            },
+          }
+        }],
+        # cflags on OS X are stupid and have to be defined like this
+        [ "OS==\"mac\"", {
+          "xcode_settings": {
+            "OTHER_CFLAGS": [
+              "-mmacosx-version-min=10.7",
+              "-std=c++11",
+              "-stdlib=libc++",
+              "<!@(node utils/find-opencv.js --cflags)",
+            ],
+            "GCC_ENABLE_CPP_RTTI": "YES",
+            "GCC_ENABLE_CPP_EXCEPTIONS": "YES"
+          }
+        }]
+      ],
+    },
   ]
 }

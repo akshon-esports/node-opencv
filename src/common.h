@@ -118,6 +118,9 @@ using namespace node;
     NAME = *Nan::Utf8String(info[IND]->ToString()); \
   }
 
+#define DEFAULT_STRING_FROM_ARGS(NAME, IND, DEF) \
+  STRING_FROM_ARGS(NAME, IND) _ELSE_DEFAULT_(NAME, DEF)
+
 #define ASSERT_STRING_FROM_ARGS(NAME, IND) \
   STRING_FROM_ARGS(NAME, IND) _ELSE_THROW_INVALID_ARGUMENT_TYPE_(IND, "a string")
 
@@ -149,8 +152,11 @@ using namespace node;
 #define DEFINE_CONST_INT(C) \
   Nan::Set(target, Nan::New<String>(#C).ToLocalChecked(), Nan::New<Integer>((int)C));
 
+#define DEFINE_CONST_NAMESPACED_ENUM(NS, C) \
+  Nan::Set(target, Nan::New<String>(#C).ToLocalChecked(), Nan::New<Integer>((int)(NS::C)));
+
 #define DEFINE_CONST_ENUM(C) \
-  Nan::Set(target, Nan::New<String>(#C).ToLocalChecked(), Nan::New<Integer>((int)(cv::C)));
+  DEFINE_CONST_NAMESPACED_ENUM(cv, C)
 
 #define GENERIC_NAMED_PROPERTY_GETTER(name) void name(Local<Name> property, const PropertyCallbackInfo<Value> &info)
 #define GENERIC_NAMED_PROPERTY_SETTER(name) void name(Local<Name> property, Local<Value> value, const PropertyCallbackInfo<Value> &info)
