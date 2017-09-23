@@ -93,10 +93,10 @@ export interface TrackerBar {
 
 export class NamedWindow {
     public constructor(name: string, flags?: number);
-    
+
     public createTrackerbar(name: string): TrackerBar;
-    
-    public destory();
+
+    public destroy();
 
     public getProperty(propId: number): number;
 

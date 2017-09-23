@@ -32,7 +32,7 @@ NamedWindow.prototype.createTrackerbar = function(trackbarname) {
   return new TrackerBar(this.name, trackbarname);
 };
 
-NamedWindow.prototype.destory = function() {
+NamedWindow.prototype.destroy = function() {
   highgui.destroyWindow(this.name);
 };
 
