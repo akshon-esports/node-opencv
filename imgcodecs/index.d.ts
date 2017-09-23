@@ -99,16 +99,16 @@ declare module '../core' {
     }
 
     interface Matrix {
-        imencode(ext: EncodeExtensions, params: number[]): Promise<Buffer>;
+        imencode(ext: EncodeExtensions, params?: number[]): Promise<Buffer>;
         imencode(ext: EncodeExtensions, callback: (err: Error, buf: Buffer) => void): void;
         imencode(ext: EncodeExtensions, params: number[], callback: (err: Error, buf: Buffer) => void): void;
 
-        imencodeSync(ext: EncodeExtensions, params: number[]): Buffer;
+        imencodeSync(ext: EncodeExtensions, params?: number[]): Buffer;
 
-        imwrite(filename: string, params: number[]): Promise<boolean>;
+        imwrite(filename: string, params?: number[]): Promise<boolean>;
         imwrite(filename: string, callback: (err: Error, success: boolean) => void): void;
         imwrite(filename: string, params: number[], callback: (err: Error, success: boolean) => void): void;
 
-        imwriteSync(filename: string, params: number[]): boolean;
+        imwriteSync(filename: string, params?: number[]): boolean;
     }
 }
