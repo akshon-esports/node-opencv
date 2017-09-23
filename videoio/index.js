@@ -22,7 +22,7 @@ VideoCaptureStream = module.exports.VideoCaptureStream = function(src) {
     try {
       var mat = self.video.read();
 
-      if (mat.empty()) {
+      if (!mat || mat.empty()) {
         return self.emit('end', null);
       }
 
