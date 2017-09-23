@@ -75,6 +75,8 @@ void Matrix::Init(Local<Object> target) {
 
   Nan::SetPrototypeMethod(ctor, "size", Size);
 
+  Nan::SetPrototypeMethod(ctor, "toBuffer", ToBuffer);
+
   Nan::Set(target, Nan::New("Matrix").ToLocalChecked(), Nan::GetFunction(ctor).ToLocalChecked());
 }
 
@@ -562,3 +564,23 @@ NAN_GETTER(Matrix::GetColumns) {
   SETUP_FUNCTION(Matrix);
   info.GetReturnValue().Set(Nan::New<Number>(self->mat.cols));
 };
+
+NAN_METHOD(Matrix::ToBuffer) {
+  SETUP_FUNCTION(Matrix);
+
+  int size = self->mat.rows * self->mat.cols * self->mat.elemSize();
+  Local<Object> buf = Nan::NewBuffer(size).ToLocalChecked();
+  uchar* data = (uchar*) Buffer::Data(buf);
+  // if there is padding after each row, clone first to get rid of it
+  if (self->mat.dims == 2 && self->mat.step[0] != size_t(self->mat.size[1])) {
+    cv::Mat copy = self->mat.clone();
+    memcpy(data, copy.data, size);
+  } else {
+    memcpy(data, self->mat.data, size);
+  }
+
+  Local<Object> globalObj = Nan::GetCurrentContext()->Global();
+  Local<Function> bufferConstructor = Local<Function>::Cast(globalObj->Get(Nan::New<String>("Buffer").ToLocalChecked()));
+  Local<Value> constructorArgs[3] { buf, Nan::New<Integer>(size), Nan::New<Integer>(0) };
+  info.GetReturnValue().Set(Nan::NewInstance(bufferConstructor, 3, constructorArgs).ToLocalChecked());
+}

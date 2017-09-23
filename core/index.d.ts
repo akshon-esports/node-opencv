@@ -213,6 +213,8 @@ export declare class Matrix extends internal.CpuMatrix<Matrix> {
     public pushBack(mat: Matrix): void;
 
     public popBack(nelements: number): void;
+
+    public toBuffer(): Buffer;
 }
 
 export declare class UnifiedMatrix extends internal.CpuMatrix<UnifiedMatrix> {

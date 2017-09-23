@@ -94,6 +94,8 @@ public:
   static NAN_GETTER(GetDimensions);
   static NAN_GETTER(GetRows);
   static NAN_GETTER(GetColumns);
+
+  static NAN_METHOD(ToBuffer);
 };
 
 #endif // __CORE__MATRIX_H__
