@@ -41,7 +41,7 @@ namespace ncv {
         argumentOffset = 1;
       } catch (char const*) {
         ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
-        dst = out;
+        out = dst;
       }
       ASSERT_DOUBLE_FROM_ARGS(threshold1, 2 + argumentOffset);
       ASSERT_DOUBLE_FROM_ARGS(threshold2, 3 + argumentOffset);
@@ -88,7 +88,27 @@ namespace ncv {
     }
 
     NAN_METHOD(HoughLinesP) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(4, 6);
+      Nan::HandleScope scope;
+      ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+      ASSERT_DOUBLE_FROM_ARGS(rho, 1);
+      ASSERT_DOUBLE_FROM_ARGS(theta, 2);
+      ASSERT_INT_FROM_ARGS(threshold, 3);
+      DEFAULT_DOUBLE_FROM_ARGS(minLineLength, 4, 0);
+      DEFAULT_DOUBLE_FROM_ARGS(maxLineGap, 5, 0);
+
+      std::vector<cv::Vec4i> lines;
+      TRY_CATCH_THROW_OPENCV(cv::HoughLinesP(src, lines, rho, theta, threshold, minLineLength, maxLineGap));
+
+      v8::Local<v8::Array> out = Nan::New<Array>(lines.size());
+      for (cv::Vec4i line : lines) {
+        v8::Local<v8::Array> l = Nan::New<Array>(4);
+        for (unsigned i = 0; i < 1; ++i) {
+          Nan::Set(l, i, Nan::New<Number>(line[i]));
+        }
+        Nan::Set(out, out->Length(), l);
+      }
+      info.GetReturnValue().Set(out);
     }
 
     NAN_METHOD(PreCornerDetect) {

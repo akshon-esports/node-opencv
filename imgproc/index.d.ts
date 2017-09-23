@@ -633,9 +633,9 @@ export function goodFeaturesToTrack(image: InputArray, corners: OutputArray, max
 
 export function houghCircles(image: InputArray, circles: OutputArray, method: number, dp: number, minDist: number, param1?: number /* = 100 */, param2?: number /* = 100 */, minRadius?: number /* = 0 */, maxRadius?: number /* = 0 */): void;
 
-export function houghLines(image: InputArray, lines: OutputArray, rho: number, theta: number, threshold: number, srn?: number /* = 0 */, stn?: number /* = 0 */, min_theta?: number /* = 0 */, max_theta?: number /* = CV_PI */): void;
+export function houghLines(image: InputArray, rho: number, theta: number, threshold: number, srn?: number /* = 0 */, stn?: number /* = 0 */, min_theta?: number /* = 0 */, max_theta?: number /* = CV_PI */): [number, number, number, number][];
 
-export function houghLinesP(image: InputArray, lines: OutputArray, rho: number, theta: number, threshold: number, minLineLength?: number /* = 0 */, maxLineGap?: number /* = 0 */): void;
+export function houghLinesP(image: InputArray, rho: number, theta: number, threshold: number, minLineLength?: number /* = 0 */, maxLineGap?: number /* = 0 */): [number, number, number, number][];
 
 export function preCornerDetect(src: InputArray, dst: OutputArray, ksize: number, borderType?: number /* = BORDER_DEFAULT */): void;
 

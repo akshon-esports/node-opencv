@@ -1,4 +1,7 @@
 #include "filter.h"
+#include "../core/Size.h"
+#include "../core/Point.h"
+#include "../core/Scalar.h"
 
 namespace ncv {
 
@@ -27,12 +30,12 @@ namespace ncv {
       Nan::SetMethod(target, "dilate", Dilate);
       Nan::SetMethod(target, "erode", Erode);
       Nan::SetMethod(target, "filter2D", Filter2D);
-      Nan::SetMethod(target, "GaussianBlur", GaussianBlur);
+      Nan::SetMethod(target, "gaussianBlur", GaussianBlur);
       Nan::SetMethod(target, "getDerivKernels", GetDerivKernels);
       Nan::SetMethod(target, "getGaborKernel", GetGaborKernel);
       Nan::SetMethod(target, "getGaussianKernel", GetGaussianKernel);
       Nan::SetMethod(target, "getStructuringElement", GetStructuringElement);
-      Nan::SetMethod(target, "Laplacian", Laplacian);
+      Nan::SetMethod(target, "laplacian", Laplacian);
       Nan::SetMethod(target, "medianBlur", MedianBlur);
       Nan::SetMethod(target, "morphologyDefaultBorderValue", MorphologyDefaultBorderValue);
       Nan::SetMethod(target, "morphologyEx", MorphologyEx);
@@ -47,7 +50,15 @@ namespace ncv {
     }
 
     NAN_METHOD(BilateralFilter) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(5, 6);
+      Nan::HandleScope scope;
+      ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+      ASSERT_INT_FROM_ARGS(d, 2);
+      ASSERT_DOUBLE_FROM_ARGS(sigmaColor, 3);
+      DEFAULT_DOUBLE_FROM_ARGS(sigmaSpace, 4, 0);
+      DEFAULT_INT_FROM_ARGS(borderType, 5, cv::BORDER_DEFAULT);
+      TRY_CATCH_THROW_OPENCV(cv::bilateralFilter(src, dst, d, sigmaColor, sigmaSpace, borderType));
     }
 
     NAN_METHOD(Blur) {
@@ -63,7 +74,15 @@ namespace ncv {
     }
 
     NAN_METHOD(Dilate) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(3, 7);
+      ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+      ASSERT_INPUTARRAY_FROM_ARGS(kernel, 2);
+      DEFAULT_POINT_FROM_ARGS(anchor, 3, cv::Point(-1, -1));
+      DEFAULT_INT_FROM_ARGS(iterations, 4, 1);
+      DEFAULT_INT_FROM_ARGS(borderType, 5, cv::BORDER_DEFAULT);
+      DEFAULT_SCALAR_FROM_ARGS(borderValue, 5, cv::morphologyDefaultBorderValue());
+      TRY_CATCH_THROW_OPENCV(cv::dilate(src, dst, kernel, anchor, iterations, borderType, borderValue));
     }
 
     NAN_METHOD(Erode) {
@@ -75,7 +94,15 @@ namespace ncv {
     }
 
     NAN_METHOD(GaussianBlur) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(4, 6);
+      Nan::HandleScope scope;
+      ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+      ASSERT_SIZE_FROM_ARGS(ksize, 2);
+      ASSERT_DOUBLE_FROM_ARGS(sigmaX, 3);
+      DEFAULT_DOUBLE_FROM_ARGS(sigmaY, 4, 0);
+      DEFAULT_INT_FROM_ARGS(borderType, 5, cv::BORDER_DEFAULT);
+      TRY_CATCH_THROW_OPENCV(cv::GaussianBlur(src, dst, ksize, sigmaX, sigmaX, borderType));
     }
 
     NAN_METHOD(GetDerivKernels) {
