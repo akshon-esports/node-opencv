@@ -22,6 +22,7 @@ public:
   static NAN_METHOD(SetWhitelist);
 
   static NAN_METHOD(Run);
+  static NAN_METHOD(RunOther);
 };
 
 #endif // __TEXT__OCRTESSERACT_H__

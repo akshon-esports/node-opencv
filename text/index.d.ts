@@ -33,7 +33,7 @@ export const PSM_SINGLE_CHAR: PageSegMode;
 
 export interface OCRResult {
     output: string;
-    components?: {
+    components: {
         rects: Rect[];
         texts: string[];
         confidences: number[];
@@ -44,7 +44,6 @@ export class OCRTesseract {
     constructor(datapath?: string, language?: string, charWhitelist?: string, oem?: OCREngineMode, psmode?: PageSegMode);
     run(image: Matrix, componentLevel?: ComponentLevel): OCRResult;
     run(image: Matrix, mask: Matrix, componentLevel?: ComponentLevel): OCRResult;
-    // TODO can't differentiate
-    // run(image: InputArray, minConfidence: number, componentLevel?: ComponentLevel): string;
-    // run(image: InputArray, mask: InputArray, minConfidence: number, componentLevel?: ComponentLevel): string;
+    runOther(image: InputArray, minConfidence: number, componentLevel?: ComponentLevel): string;
+    runOther(image: InputArray, mask: InputArray, minConfidence: number, componentLevel?: ComponentLevel): string;
 }
