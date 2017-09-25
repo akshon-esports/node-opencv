@@ -23,7 +23,7 @@ namespace ncv {
       ASSERT_DOUBLE_FROM_ARGS(beta, 3);
       ASSERT_DOUBLE_FROM_ARGS(gamma, 4);
       ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 5);
-      ASSERT_INT_FROM_ARGS(dtype, 6);
+      DEFAULT_INT_FROM_ARGS(dtype, 6, -1);
       TRY_CATCH_THROW_OPENCV(cv::addWeighted(src1, alpha, src2, beta, gamma, dst, dtype));
     }
 
