@@ -119,10 +119,13 @@ NAN_METHOD(OCRTesseract::RunOther) {
 
   int argumentOffset = 0;
   cv::_InputArray mask;
-  try {
-    mask = ReadInputArray(info[1]);
-    argumentOffset += 1;
-  } catch (const char*) {}
+  if (!info[1]->IsNumber()) {
+    // don't allow number as a mask
+    try {
+      mask = ReadInputArray(info[1]);
+      argumentOffset += 1;
+    } catch (const char*) {}
+  }
 
   ASSERT_DOUBLE_FROM_ARGS(min_confidence, 1 + argumentOffset);
   DEFAULT_INT_FROM_ARGS(component_level, 2 + argumentOffset, cv::text::OCR_LEVEL_WORD);
