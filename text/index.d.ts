@@ -42,6 +42,8 @@ export interface OCRResult {
 
 export class OCRTesseract {
     constructor(datapath?: string, language?: string, charWhitelist?: string, oem?: OCREngineMode, psmode?: PageSegMode);
+    setWhitelist(whitelist: string): void;
+
     run(image: Matrix, componentLevel?: ComponentLevel): OCRResult;
     run(image: Matrix, mask: Matrix, componentLevel?: ComponentLevel): OCRResult;
     runOther(image: InputArray, minConfidence: number, componentLevel?: ComponentLevel): string;

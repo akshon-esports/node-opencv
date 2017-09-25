@@ -18,7 +18,9 @@ void OCRTesseract::Init(Local<Object> target) {
   inst->SetInternalFieldCount(1);
 
   // Prototype Methods
+  Nan::SetPrototypeMethod(ctor, "setWhitelist", SetWhitelist);
   Nan::SetPrototypeMethod(ctor, "run", Run);
+  Nan::SetPrototypeMethod(ctor, "runOther", RunOther);
 
   Nan::Set(target, Nan::New("OCRTesseract").ToLocalChecked(), ctor->GetFunction());
 }
@@ -68,48 +70,71 @@ NAN_METHOD(OCRTesseract::Run) {
     argumentOffset += 1;
   } catch (const char*) {}
 
-  int component_level;
-  bool output_components = false;
+  DEFAULT_INT_FROM_ARGS(component_level, 1 + argumentOffset, cv::text::OCR_LEVEL_WORD);
+
+  std::string output;
   std::vector<cv::Rect> component_rects;
   std::vector<std::string> component_texts;
   std::vector<float> component_confidences;
-  if (info.Length() > 1 + argumentOffset && info[1 + argumentOffset]->IsNumber()) {
-    component_level = info[1 + argumentOffset]->Int32Value();
-    output_components = true;
-  } else {
-    component_level = cv::text::OCR_LEVEL_WORD;
-  }
-
-  std::string output;
   TRY_CATCH_THROW_OPENCV(
     if (argumentOffset == 1) {
-      self->tesseract->run(image->mat, mask, output, output_components ? &component_rects : NULL, output_components ? &component_texts : NULL, output_components ? &component_confidences : NULL, component_level);
+      self->tesseract->run(image->mat, mask, output, &component_rects, &component_texts, &component_confidences, component_level);
     } else {
-      self->tesseract->run(image->mat, output, output_components ? &component_rects : NULL, output_components ? &component_texts : NULL, output_components ? &component_confidences : NULL, component_level);
+      self->tesseract->run(image->mat, output, &component_rects, &component_texts, &component_confidences, component_level);
     }
   );
 
   Local<Object> out = Nan::New<Object>();
   Nan::Set(out, Nan::New<String>("output").ToLocalChecked(), Nan::New<String>(output).ToLocalChecked());
-  if (output_components) {
-    Local<Array> rects = Nan::New<Array>();
-    for (cv::Rect rect : component_rects) {
-      Nan::Set(rects, rects->Length(), Rect::NewInstance(rect));
-    }
-    Nan::Set(out, Nan::New<String>("rects").ToLocalChecked(), rects);
 
-    Local<Array> texts = Nan::New<Array>();
-    for (std::string text : component_texts) {
-      Nan::Set(texts, texts->Length(), Nan::New<String>(text).ToLocalChecked());
-    }
-    Nan::Set(out, Nan::New<String>("texts").ToLocalChecked(), texts);
+  Local<Object> components = Nan::New<Object>();
 
-    Local<Array> confidences = Nan::New<Array>();
-    for (float confidence : component_confidences) {
-      Nan::Set(confidences, confidences->Length(), Nan::New<Number>(confidence));
-    }
-    Nan::Set(out, Nan::New<String>("confidences").ToLocalChecked(), confidences);
+  Local<Array> rects = Nan::New<Array>();
+  for (cv::Rect rect : component_rects) {
+    Nan::Set(rects, rects->Length(), Rect::NewInstance(rect));
   }
+  Nan::Set(components, Nan::New<String>("rects").ToLocalChecked(), rects);
+
+  Local<Array> texts = Nan::New<Array>();
+  for (std::string text : component_texts) {
+    Nan::Set(texts, texts->Length(), Nan::New<String>(text).ToLocalChecked());
+  }
+  Nan::Set(components, Nan::New<String>("texts").ToLocalChecked(), texts);
+
+  Local<Array> confidences = Nan::New<Array>();
+  for (float confidence : component_confidences) {
+    Nan::Set(confidences, confidences->Length(), Nan::New<Number>(confidence));
+  }
+  Nan::Set(components, Nan::New<String>("confidences").ToLocalChecked(), confidences);
+
+  Nan::Set(out, Nan::New<String>("components").ToLocalChecked(), components);
 
   info.GetReturnValue().Set(out);
+}
+
+NAN_METHOD(OCRTesseract::RunOther) {
+  FUNCTION_REQUIRE_ARGUMENTS_RANGE(2, 4);
+  SETUP_FUNCTION(OCRTesseract);
+  ASSERT_INPUTARRAY_FROM_ARGS(image, 0);
+
+  int argumentOffset = 0;
+  cv::_InputArray mask;
+  try {
+    mask = ReadInputArray(info[1]);
+    argumentOffset += 1;
+  } catch (const char*) {}
+
+  ASSERT_DOUBLE_FROM_ARGS(min_confidence, 1 + argumentOffset);
+  DEFAULT_INT_FROM_ARGS(component_level, 2 + argumentOffset, cv::text::OCR_LEVEL_WORD);
+
+  std::string output;
+  TRY_CATCH_THROW_OPENCV(
+    if (argumentOffset == 1) {
+      output = self->tesseract->run(image, mask, min_confidence, component_level);
+    } else {
+      output = self->tesseract->run(image, min_confidence, component_level);
+    }
+  );
+
+  info.GetReturnValue().Set(Nan::New<String>(output).ToLocalChecked());
 }
