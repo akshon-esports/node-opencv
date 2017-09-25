@@ -101,13 +101,16 @@ namespace ncv {
       TRY_CATCH_THROW_OPENCV(cv::HoughLinesP(src, lines, rho, theta, threshold, minLineLength, maxLineGap));
 
       v8::Local<v8::Array> out = Nan::New<Array>(lines.size());
-      for (cv::Vec4i line : lines) {
-        v8::Local<v8::Array> l = Nan::New<Array>(4);
-        for (unsigned i = 0; i < 1; ++i) {
-          Nan::Set(l, i, Nan::New<Number>(line[i]));
-        }
-        Nan::Set(out, out->Length(), l);
+      for (unsigned i = 0; i < lines.size(); ++i) {
+        v8::Local<v8::Array> arr = Nan::New<Array>(4);
+        Nan::Set(arr, 0, Nan::New<Number>(lines[i][0]));
+        Nan::Set(arr, 1, Nan::New<Number>(lines[i][1]));
+        Nan::Set(arr, 2, Nan::New<Number>(lines[i][2]));
+        Nan::Set(arr, 3, Nan::New<Number>(lines[i][3]));
+
+        Nan::Set(out, i, arr);
       }
+
       info.GetReturnValue().Set(out);
     }
 
