@@ -15,7 +15,16 @@ namespace ncv {
     }
 
     NAN_METHOD(AddWeighted) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(6, 7);
+      Nan::HandleScope scope;
+      ASSERT_INPUTARRAY_FROM_ARGS(src1, 0);
+      ASSERT_DOUBLE_FROM_ARGS(alpha, 1);
+      ASSERT_INPUTARRAY_FROM_ARGS(src2, 2);
+      ASSERT_DOUBLE_FROM_ARGS(beta, 3);
+      ASSERT_DOUBLE_FROM_ARGS(gamma, 4);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 5);
+      ASSERT_INT_FROM_ARGS(dtype, 6);
+      TRY_CATCH_THROW_OPENCV(cv::addWeighted(src1, alpha, src2, beta, gamma, dst, dtype));
     }
 
     NAN_METHOD(BatchDistance) {

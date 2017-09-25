@@ -215,6 +215,8 @@ export declare class Matrix extends internal.CpuMatrix<Matrix> {
     public popBack(nelements: number): void;
 
     public toBuffer(): Buffer;
+
+    public static addWeighted(src1: InputArray, alpha: number, src2: InputArray, beta: number, gamma: number, dtype?: number): Matrix;
 }
 
 export declare class UnifiedMatrix extends internal.CpuMatrix<UnifiedMatrix> {
