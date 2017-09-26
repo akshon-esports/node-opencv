@@ -21,6 +21,10 @@ public:
 
   static NAN_METHOD(SetWhitelist);
 
+#ifdef OPENCV_IS_AKSHON_MODDED
+  static NAN_METHOD(SetVariable);
+#endif
+
   static NAN_METHOD(Run);
   static NAN_METHOD(RunOther);
 };

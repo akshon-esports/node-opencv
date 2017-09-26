@@ -19,6 +19,10 @@ void OCRTesseract::Init(Local<Object> target) {
 
   // Prototype Methods
   Nan::SetPrototypeMethod(ctor, "setWhitelist", SetWhitelist);
+#ifdef OPENCV_IS_AKSHON_MODDED
+  Nan::SetPrototypeMethod(ctor, "setVariable", SetVariable);
+#endif
+
   Nan::SetPrototypeMethod(ctor, "run", Run);
   Nan::SetPrototypeMethod(ctor, "runOther", RunOther);
 
@@ -56,6 +60,16 @@ NAN_METHOD(OCRTesseract::SetWhitelist) {
   ASSERT_STRING_FROM_ARGS(whitelist, 0);
   TRY_CATCH_THROW_OPENCV(self->tesseract->setWhiteList(whitelist.c_str()));
 }
+
+#ifdef OPENCV_IS_AKSHON_MODDED
+NAN_METHOD(OCRTesseract::SetVariable) {
+  FUNCTION_REQUIRE_ARGUMENTS(2);
+  SETUP_FUNCTION(OCRTesseract);
+  ASSERT_STRING_FROM_ARGS(name, 0);
+  ASSERT_STRING_FROM_ARGS(value, 1);
+  TRY_CATCH_THROW_OPENCV(self->tesseract->setVariable(name, value));
+}
+#endif
 
 NAN_METHOD(OCRTesseract::Run) {
   FUNCTION_REQUIRE_ARGUMENTS_RANGE(1, 3);
