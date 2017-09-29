@@ -14,12 +14,6 @@
     return THROW_INVALID_ARGUMENT_TYPE(IND, "a Matrix"); \
   }
 
-namespace cv {
-  namespace cuda {
-    class GpuMat;
-  }
-}
-
 class NCV_CORE_EXTERN Matrix : Nan::ObjectWrap {
 private:
   static Nan::Persistent<FunctionTemplate> constructor;

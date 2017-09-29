@@ -139,12 +139,15 @@ using namespace node;
 #define ASSERT_ARRAY_FROM_ARGS(NAME, IND) \
   ARRAY_FROM_ARGS(NAME, IND) _ELSE_THROW_INVALID_ARGUMENT_TYPE_(IND, "an Array");
 
-#define TRY_CATCH_THROW_OPENCV(STMT) \
+#define TRY_CATCH_THEN_THROW_OPENCV(STMT, SOMETHING) \
   try { \
     STMT; \
   } catch (cv::Exception e) { \
+    SOMETHING; \
     return Nan::ThrowError(e.what());\
   }
+
+#define TRY_CATCH_THROW_OPENCV(STMT) TRY_CATCH_THEN_THROW_OPENCV(STMT, )
 
 #define DEFINE_CONST(C) \
   Nan::Set(target, Nan::New<String>(#C).ToLocalChecked(), Nan::New<Integer>(C));

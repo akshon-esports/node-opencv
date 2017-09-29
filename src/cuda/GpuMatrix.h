@@ -4,7 +4,12 @@
 #include "common.h"
 
 class NCV_CORE_EXTERN GpuMatrix : public Nan::ObjectWrap {
+private:
+  static Nan::Persistent<FunctionTemplate> constructor;
+
 public:
+  cv::cuda::GpuMat mat;
+
   static void Init(Local<Object> const &target);
 
   GpuMatrix() : Nan::ObjectWrap() {};

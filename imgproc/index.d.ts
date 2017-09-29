@@ -1,5 +1,10 @@
 import { InputArray, InputOutputArray, Matrix, OutputArray,  Point, Rect, RotatedRect, Scalar, Size, TerminationCriteria } from '../core';
 
+export interface Circle {
+    center: Point;
+    radius: number;
+}
+
 /** Image Filtering **/
 export type MorphShapes = number;
 export type MorphTypes = number;
@@ -501,10 +506,29 @@ export function equalizeHist(src: InputArray, dst: OutputArray): void;
 export class Moments {}
 
 export class Contour {
+    public length: number;
+    [index: number]: Point;
+
     public parent(): Contour;
     public children(): Contour[];
     public next(): Contour;
     public previous(): Contour;
+
+    public moments(binaryImage?: boolean /* = false */): Moments;
+    public area(oriented?: boolean /* = false */): number;
+    public arcLength(closed: boolean): number;
+    public approxPolyDP(epsilon: number, closed: boolean): Point[];
+    public convexHull(clockwise?: boolean /* = false */): Point[];
+    public isConvex(): boolean;
+    public boundingRect(): Rect;
+    public minAreaRect(): RotatedRect;
+    public minEnclosingCircle(center?: Point /* = Point() */, radius?: number /* = 0 */): Circle;
+    public fitEllipse(): RotatedRect;
+    public fitLine(distType: number, param: number, reps: number, aeps: number): [Point, Point];
+
+    public convexityDefects(hull: Point[]): [number, number, number, number][];
+    public pointPolygonTest(point: Point, measureDist: boolean): number;
+    public matchShapes(contour: Contour, method: ShapeMatchModes, parameter?: number): number;
 }
 
 export class Contours {
@@ -611,10 +635,16 @@ export function phaseCorrelate(src1: InputArray, src2: InputArray, window?: Inpu
 
 /** Feature Detection **/
 export type LineSegmentDetectorModes = number;
+export type HoughModes = number;
 
 export const LSD_REFINE_NONE: LineSegmentDetectorModes;
 export const LSD_REFINE_STD: LineSegmentDetectorModes;
 export const LSD_REFINE_ADV: LineSegmentDetectorModes;
+
+export const HOUGH_STANDARD: HoughModes;
+export const HOUGH_PROBABILISTIC: HoughModes;
+export const HOUGH_MULTI_SCALE: HoughModes;
+export const HOUGH_GRADIENT: HoughModes;
 
 export function canny(image: InputArray, edges: OutputArray, threshold1: number, threshold2: number, apertureSize?: number /* = 3 */, L2gradient?: boolean /* = false */): void;
 export function canny(dx: InputArray, dy: InputArray, edges: OutputArray, threshold1: number, threshold2: number, L2gradient?: boolean /* = false */): void;
@@ -631,7 +661,7 @@ export function cornerSubPix(image: InputArray, corners: InputOutputArray, winSi
 
 export function goodFeaturesToTrack(image: InputArray, corners: OutputArray, maxCorners: number, qualityLevel: number, minDistance: number, mask?: InputArray /* = noArray() */, blockSize?: number /* = 3 */, useHarrisDetector?: boolean /* = false */, k?: number /* = 0.04 */): void;
 
-export function houghCircles(image: InputArray, circles: OutputArray, method: number, dp: number, minDist: number, param1?: number /* = 100 */, param2?: number /* = 100 */, minRadius?: number /* = 0 */, maxRadius?: number /* = 0 */): void;
+export function houghCircles(image: InputArray, method: HoughModes, dp: number, minDist: number, param1?: number /* = 100 */, param2?: number /* = 100 */, minRadius?: number /* = 0 */, maxRadius?: number /* = 0 */): Circle[];
 
 export function houghLines(image: InputArray, rho: number, theta: number, threshold: number, srn?: number /* = 0 */, stn?: number /* = 0 */, min_theta?: number /* = 0 */, max_theta?: number /* = CV_PI */): [number, number, number, number][];
 

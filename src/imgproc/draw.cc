@@ -39,7 +39,15 @@ namespace ncv {
     }
 
     NAN_METHOD(Circle) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(4, 7);
+      ASSERT_INPUTOUTPUTARRAY_FROM_ARGS(img, 0);
+      ASSERT_POINT_FROM_ARGS(center, 1);
+      ASSERT_INT_FROM_ARGS(radius, 2);
+      ASSERT_SCALAR_FROM_ARGS(color, 3);
+      DEFAULT_INT_FROM_ARGS(thickness, 4, 1);
+      DEFAULT_INT_FROM_ARGS(lineType, 5, cv::LINE_8);
+      DEFAULT_INT_FROM_ARGS(shift, 6, 0);
+      TRY_CATCH_THROW_OPENCV(cv::circle(img, center, radius, color, thickness, lineType, shift));
     }
 
     NAN_METHOD(ClipLine) {

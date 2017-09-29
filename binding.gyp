@@ -114,7 +114,6 @@
       "sources": [
         "src/core/Matrix.cc",
         "src/core/UnifiedMatrix.cc",
-        "src/core/GpuMatrix.cc",
         "src/core/Point.cc",
         "src/core/Range.cc",
         "src/core/Rect.cc",

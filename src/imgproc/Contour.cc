@@ -19,6 +19,7 @@ void Contour::Init(Local<Object> target) {
   Local<ObjectTemplate> inst = ctor->InstanceTemplate();
   inst->SetInternalFieldCount(1);
   Nan::SetIndexedPropertyHandler(inst, IndexGetter, 0, IndexQuery, 0, IndexEnumerator);
+  Nan::SetAccessor(inst, Nan::New<String>("length").ToLocalChecked(), LengthGetter);
 
   // Prototype
   Nan::SetPrototypeMethod(ctor, "parent", Parent);
@@ -26,7 +27,7 @@ void Contour::Init(Local<Object> target) {
   Nan::SetPrototypeMethod(ctor, "next", Next);
   Nan::SetPrototypeMethod(ctor, "previous", Previous);
 
-//  Nan::SetPrototypeMethod(ctor, "moments", Moments);
+  Nan::SetPrototypeMethod(ctor, "moments", Moments);
   Nan::SetPrototypeMethod(ctor, "area", Area);
   Nan::SetPrototypeMethod(ctor, "arcLength", ArcLength);
   Nan::SetPrototypeMethod(ctor, "approxPolyDP", ApproxPolyDP);
@@ -107,6 +108,11 @@ NAN_INDEX_ENUMERATOR(Contour::IndexEnumerator) {
     Nan::Set(arr, i, Nan::New(std::to_string(i)).ToLocalChecked());
   }
   info.GetReturnValue().Set(arr);
+}
+
+NAN_GETTER(Contour::LengthGetter) {
+  Contour *self = UNWRAP_OBJECT(Contour, info.This());
+  info.GetReturnValue().Set(Nan::New<Number>(self->contours[self->index].size()));
 }
 
 NAN_METHOD(Contour::Parent) {

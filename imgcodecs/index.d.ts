@@ -75,7 +75,7 @@ export function imwrite(filename: string, img: InputArray, params?: number[]): P
 export function imwrite(filename: string, img: InputArray, callback: (err: Error, success: boolean) => void): void;
 export function imwrite(filename: string, img: InputArray, params: number[], callback: (err: Error, success: boolean) => void): void;
 
-export function imwriteSync(filename: string, img: InputArray, params: number[]): boolean;
+export function imwriteSync(filename: string, img: InputArray, params?: number[]): boolean;
 
 declare module '../core' {
     namespace Matrix {

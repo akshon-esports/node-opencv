@@ -4,7 +4,6 @@
 #include "Size.h"
 #include "Matrix.h"
 #include "UnifiedMatrix.h"
-#include "GpuMatrix.h"
 #include "array.h"
 
 NAN_METHOD(NotImplemented) {
@@ -233,7 +232,6 @@ extern "C" void init(Local<Object> target) {
   Size::Init(target);
   Matrix::Init(target);
   UnifiedMatrix::Init(target);
-  GpuMatrix::Init(target);
   ncv::core::ArrayInit(target);
 }
 

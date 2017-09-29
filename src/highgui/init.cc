@@ -240,14 +240,14 @@ namespace ncv {
       FUNCTION_REQUIRE_ARGUMENTS_RANGE(0, 1);
       Nan::HandleScope scope;
       DEFAULT_INT_FROM_ARGS(delay, 0, 0);
-      TRY_CATCH_THROW_OPENCV(Nan::New<Number>(cv::waitKey(delay)));
+      TRY_CATCH_THROW_OPENCV(info.GetReturnValue().Set(Nan::New<Integer>(cv::waitKey(delay))));
     }
 
     NAN_METHOD(WaitKeyEx) {
       FUNCTION_REQUIRE_ARGUMENTS(1);
       Nan::HandleScope scope;
       ASSERT_INT_FROM_ARGS(delay, 0);
-      TRY_CATCH_THROW_OPENCV(Nan::New<Number>(cv::waitKeyEx(delay)));
+      TRY_CATCH_THROW_OPENCV(info.GetReturnValue().Set(Nan::New<Integer>(cv::waitKeyEx(delay))));
     }
 
     extern "C" void init(Local<Object> target) {

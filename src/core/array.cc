@@ -305,7 +305,11 @@ namespace ncv {
     }
 
     NAN_METHOD(Pow) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS(2);
+      ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+      ASSERT_DOUBLE_FROM_ARGS(power, 1);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 2);
+      TRY_CATCH_THROW_OPENCV(cv::pow(src, power, dst));
     }
 
     NAN_METHOD(PSNR) {
@@ -373,15 +377,26 @@ namespace ncv {
     }
 
     NAN_METHOD(Sqrt) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS(2);
+      ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+      TRY_CATCH_THROW_OPENCV(cv::sqrt(src, dst));
     }
 
     NAN_METHOD(Subtract) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(3, 5);
+      ASSERT_INPUTARRAY_FROM_ARGS(src1, 0);
+      ASSERT_INPUTARRAY_FROM_ARGS(src2, 1);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 2);
+      DEFAULT_INPUTARRAY_FROM_ARGS(mask, 3, cv::noArray());
+      DEFAULT_INT_FROM_ARGS(dtype, 3, -1);
+      TRY_CATCH_THROW_OPENCV(cv::subtract(src1, src2, dst, mask, dtype));
     }
 
     NAN_METHOD(Sum) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS(1);
+      ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+      TRY_CATCH_THROW_OPENCV(info.GetReturnValue().Set(Scalar::NewInstance(cv::sum(src))));
     }
 
     NAN_METHOD(SVBackSubst) {

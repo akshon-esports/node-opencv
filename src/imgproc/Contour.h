@@ -40,6 +40,8 @@ public:
   static NAN_INDEX_QUERY(IndexQuery);
   static NAN_INDEX_ENUMERATOR(IndexEnumerator);
 
+  static NAN_GETTER(LengthGetter);
+
   // traversing hierarchy
   static NAN_METHOD(Parent);
   static NAN_METHOD(Children);

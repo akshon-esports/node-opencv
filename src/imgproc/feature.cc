@@ -1,5 +1,7 @@
 #include "feature.h"
 
+#include "../core/Point.h"
+
 namespace ncv {
 
   namespace imgproc {
@@ -9,6 +11,12 @@ namespace ncv {
       DEFINE_CONST_ENUM(LSD_REFINE_NONE);
       DEFINE_CONST_ENUM(LSD_REFINE_STD);
       DEFINE_CONST_ENUM(LSD_REFINE_ADV);
+
+      // hough modes
+      DEFINE_CONST_ENUM(HOUGH_STANDARD);
+      DEFINE_CONST_ENUM(HOUGH_PROBABILISTIC);
+      DEFINE_CONST_ENUM(HOUGH_MULTI_SCALE);
+      DEFINE_CONST_ENUM(HOUGH_GRADIENT);
 
       Nan::SetMethod(target, "canny", Canny);
       Nan::SetMethod(target, "cornerEigenValsAndVecs", CornerEigenValsAndVecs);
@@ -80,7 +88,31 @@ namespace ncv {
     }
 
     NAN_METHOD(HoughCircles) {
-      NotImplemented(info);
+      ASSERT_INPUTARRAY_FROM_ARGS(img, 0);
+      ASSERT_INT_FROM_ARGS(method, 1);
+      ASSERT_DOUBLE_FROM_ARGS(dp, 2);
+      ASSERT_DOUBLE_FROM_ARGS(minDist, 3);
+      DEFAULT_DOUBLE_FROM_ARGS(param1, 4, 100);
+      DEFAULT_DOUBLE_FROM_ARGS(param2, 5, 100);
+      DEFAULT_DOUBLE_FROM_ARGS(minRadius, 5, 0);
+      DEFAULT_DOUBLE_FROM_ARGS(maxRadius, 6, 0);
+      std::vector<cv::Vec3f> circles;
+      TRY_CATCH_THROW_OPENCV(cv::HoughCircles(img, circles, method, dp, minDist, param1, param2, minRadius, maxRadius));
+
+      Local<String> center = Nan::New<String>("center").ToLocalChecked();
+      Local<String> radius = Nan::New<String>("radius").ToLocalChecked();
+
+      Local<Array> out = Nan::New<Array>();
+      for (cv::Vec3f circle : circles) {
+        Local<Object> circleObj = Nan::New<Object>();
+
+        Nan::Set(circleObj, center, Point::NewInstance(circle[0], circle[1]));
+        Nan::Set(circleObj, radius, Nan::New<Number>(circle[2]));
+
+        Nan::Set(out, out->Length(), circleObj);
+      }
+
+      info.GetReturnValue().Set(out);
     }
 
     NAN_METHOD(HoughLines) {

@@ -4,6 +4,7 @@
 #include "Size.h"
 #include "Rect.h"
 #include "Range.h"
+#include "UnifiedMatrix.h"
 
 Nan::Persistent<FunctionTemplate> Matrix::constructor;
 
@@ -241,7 +242,7 @@ cv::Mat Matrix::RawMatrix(int const&argc, Local<Value>* const argv) {
         // assume argv[3] is not a Scalar
       }
     } else {
-      cv::Mat(rows, cols, type);
+      return cv::Mat(rows, cols, type);
     }
   }
 
@@ -257,7 +258,11 @@ cv::Mat Matrix::RawMatrix(int const&argc, Local<Value>* const argv) {
 }
 
 NAN_METHOD(Matrix::GetUnifiedMatrix) {
-  NotImplemented(info);
+  FUNCTION_REQUIRE_ARGUMENTS(1);
+  SETUP_FUNCTION(Matrix);
+  ASSERT_INT_FROM_ARGS(accessFlags, 0);
+  ASSERT_INT_FROM_ARGS(usageFlags, 1);
+  TRY_CATCH_THROW_OPENCV(info.GetReturnValue().Set(UnifiedMatrix::NewInstance(self->mat.getUMat(accessFlags, static_cast<cv::UMatUsageFlags>(usageFlags)))));
 }
 
 NAN_METHOD(Matrix::Row) {
@@ -347,7 +352,7 @@ NAN_METHOD(Matrix::Reshape) {
     std::vector<int> newShape(arr->Length());
     for (unsigned i = 0; i < arr->Length(); ++i) {
       if (!arr->IsNumber()) {
-        throw ERROR_INVALID_ARGUMENTS;
+        return Nan::ThrowError(ERROR_INVALID_ARGUMENTS);
       }
 
       newShape.push_back(arr->Int32Value());
@@ -356,7 +361,7 @@ NAN_METHOD(Matrix::Reshape) {
     TRY_CATCH_THROW_OPENCV(self->mat.reshape(cn, newShape));
   }
 
-  throw ERROR_INVALID_ARGUMENTS;
+  return Nan::ThrowError(ERROR_INVALID_ARGUMENTS);
 }
 
 NAN_METHOD(Matrix::Transpose) {
@@ -551,19 +556,22 @@ NAN_METHOD(Matrix::Size) {
 NAN_GETTER(Matrix::GetFlags) {
   SETUP_FUNCTION(Matrix);
   info.GetReturnValue().Set(Nan::New<Number>(self->mat.flags));
-};
+}
+
 NAN_GETTER(Matrix::GetDimensions) {
   SETUP_FUNCTION(Matrix);
   info.GetReturnValue().Set(Nan::New<Number>(self->mat.dims));
-};
+}
+
 NAN_GETTER(Matrix::GetRows) {
   SETUP_FUNCTION(Matrix);
   info.GetReturnValue().Set(Nan::New<Number>(self->mat.rows));
-};
+}
+
 NAN_GETTER(Matrix::GetColumns) {
   SETUP_FUNCTION(Matrix);
   info.GetReturnValue().Set(Nan::New<Number>(self->mat.cols));
-};
+}
 
 NAN_METHOD(Matrix::ToBuffer) {
   SETUP_FUNCTION(Matrix);
