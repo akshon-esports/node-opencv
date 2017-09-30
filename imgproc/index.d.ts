@@ -422,18 +422,17 @@ export function arrowedLine(img: InputOutputArray, pt1: Point, pt2: Point, color
 export function circle(img: InputOutputArray, center: Point, radius: number, color: Scalar, thickness?: number /* = 1 */, lineType?: number /* = LINE_8 */, shift?: number /* = 0 */): void;
 
 export function clipLine(imgSize: Size, pt1: Point, pt2: Point): boolean;
-export function clipLine(imgSize: Size, pt1: Point, pt2: Point): boolean;
 export function clipLine(imgRect: Rect, pt1: Point, pt2: Point): boolean;
 
 export function drawContours(image: InputOutputArray, contours: Contours, contourIdx: number, color: Scalar, thickness?: number /* = 1 */, lineType?: number /* = LINE_8 */, maxLevel?: number /* = INT_MAX */, offset?: Point /* = Point() */): void;
 
-export function drawMarker(img: Matrix, position: Point, color: Scalar, markerType?: number /* = MARKER_CROSS */, markerSize?: number /* = 20 */, thickness?: number /* = 1 */, line_type?: number /* = 8 */): void;
+export function drawMarker(img: Matrix, position: Point, color: Scalar, markerType?: MarkerTypes /* = MARKER_CROSS */, markerSize?: number /* = 20 */, thickness?: number /* = 1 */, line_type?: number /* = 8 */): void;
 
 export function ellipse(img: InputOutputArray, center: Point, axes: Size, angle: number, startAngle: number, endAngle: number, color: Scalar, thickness?: number /* = 1 */, lineType?: number /* = LINE_8 */, shift?: number /* = 0 */): void;
 export function ellipse(img: InputOutputArray, box: RotatedRect, color: Scalar, thickness?: number /* = 1 */, lineType?: number /* = LINE_8 */): void;
 
-export function ellipse2Poly(center: Point, axes: Size, angle: number, arcStart: number, arcEnd: number, delta: number, pts: Point[]): void;
-export function ellipse2Poly(center: Point, axes: Size, angle: number, arcStart: number, arcEnd: number, delta: number, pts: Point[]): void;
+export function ellipse2Poly(center: Point, axes: Size, angle: number, arcStart: number, arcEnd: number, delta: number): Point[];
+export function ellipse2Poly(center: Point, axes: Size, angle: number, arcStart: number, arcEnd: number, delta: number): Point[];
 
 export function fillConvexPoly(img: Matrix, pts: Point, npts: number, color: Scalar, lineType?: number /* = LINE_8 */, shift?: number /* = 0 */): void;
 export function fillConvexPoly(img: InputOutputArray, points: InputArray, color: Scalar, lineType?: number /* = LINE_8 */, shift?: number /* = 0 */): void;
@@ -441,7 +440,7 @@ export function fillConvexPoly(img: InputOutputArray, points: InputArray, color:
 // TODO export function fillPoly(img: Matrix, *pts: Point, npts: number, ncontours: number, color: Scalar, lineType?: number /* = LINE_8 */, shift?: number /* = 0 */, offset?: Point /* = Point() */): void;
 export function fillPoly(img: InputOutputArray, pts: InputArray[], color: Scalar, lineType?: number /* = LINE_8 */, shift?: number /* = 0 */, offset?: Point /* = Point() */): void;
 
-export function getTextSize(text: String, fontFace: number, fontScale: number, thickness: number, baseLine: number): Size;
+export function getTextSize(text: String, fontFace: number, fontScale: number, thickness: number): { baseline: number, size: Size };
 
 export function line(img: InputOutputArray, pt1: Point, pt2: Point, color: Scalar, thickness?: number /* = 1 */, lineType?: number /* = LINE_8 */, shift?: number /* = 0 */): void;
 
@@ -505,7 +504,7 @@ export function equalizeHist(src: InputArray, dst: OutputArray): void;
 // TODO Moments
 export class Moments {}
 
-export class Contour {
+export class Contour implements ArrayLike<Point> {
     public length: number;
     [index: number]: Point;
 

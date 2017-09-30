@@ -3,6 +3,8 @@
 #include "../core/Rect.h"
 #include "../core/Scalar.h"
 #include "Contour.h"
+#include "../core/Size.h"
+#include "../core/Matrix.h"
 
 namespace ncv {
 
@@ -35,7 +37,16 @@ namespace ncv {
     }
 
     NAN_METHOD(ArrowedLine) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(4, 8);
+      ASSERT_INPUTOUTPUTARRAY_FROM_ARGS(img, 0);
+      ASSERT_POINT_FROM_ARGS(pt1, 1);
+      ASSERT_POINT_FROM_ARGS(pt2, 2);
+      ASSERT_SCALAR_FROM_ARGS(color, 3);
+      DEFAULT_INT_FROM_ARGS(thickness, 4, 1);
+      DEFAULT_INT_FROM_ARGS(lineType, 5, cv::LINE_8);
+      DEFAULT_INT_FROM_ARGS(shift, 6, 0);
+      DEFAULT_DOUBLE_FROM_ARGS(tipLength, 6, 0);
+      TRY_CATCH_THROW_OPENCV(cv::arrowedLine(img, pt1, pt2, color, thickness, lineType, tipLength));
     }
 
     NAN_METHOD(Circle) {
@@ -51,7 +62,21 @@ namespace ncv {
     }
 
     NAN_METHOD(ClipLine) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS(3);
+      ASSERT_POINT_FROM_ARGS(pt1, 1);
+      ASSERT_POINT_FROM_ARGS(pt2, 2);
+      Local<Value> val = info[0];
+      TRY_CATCH_THROW_OPENCV(
+        try {
+          info.GetReturnValue().Set(Nan::New<Boolean>(cv::clipLine(Size::RawSize(1, &val), pt1, pt2)));
+        } catch (char const*) {
+          try {
+            info.GetReturnValue().Set(Nan::New<Boolean>(cv::clipLine(Rect::RawRect(1, &val), pt1, pt2)));
+          } catch (char const*) {
+            return Nan::ThrowError(ERROR_INVALID_ARGUMENTS);
+          }
+        }
+      );
     }
 
     NAN_METHOD(DrawContours) {
@@ -69,7 +94,15 @@ namespace ncv {
     }
 
     NAN_METHOD(DrawMarker) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(3, 7);
+      ASSERT_MATRIX_FROM_ARGS(img, 0);
+      ASSERT_POINT_FROM_ARGS(position, 1);
+      ASSERT_SCALAR_FROM_ARGS(color, 2);
+      DEFAULT_INT_FROM_ARGS(markerType, 3, cv::MARKER_CROSS);
+      DEFAULT_INT_FROM_ARGS(markerSize, 4, 20);
+      DEFAULT_INT_FROM_ARGS(thickness, 5, 1);
+      DEFAULT_INT_FROM_ARGS(lineType, 6, cv::LINE_8);
+      TRY_CATCH_THROW_OPENCV(cv::drawMarker(img->mat, position, color, markerType, markerSize, thickness, lineType));
     }
 
     NAN_METHOD(Ellipse) {
@@ -77,31 +110,128 @@ namespace ncv {
     }
 
     NAN_METHOD(Ellipse2Poly) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS(6);
+      ASSERT_POINT_FROM_ARGS(center, 0);
+      ASSERT_SIZE_FROM_ARGS(axes, 1);
+      ASSERT_INT_FROM_ARGS(angle, 2);
+      ASSERT_INT_FROM_ARGS(arcStart, 3);
+      ASSERT_INT_FROM_ARGS(arcEnd, 4);
+      ASSERT_INT_FROM_ARGS(delta, 5);
+      std::vector<cv::Point> pts;
+      TRY_CATCH_THROW_OPENCV(cv::ellipse2Poly(center, axes, angle, arcStart, arcEnd, delta, pts));
+
+      Local<Array> out = Nan::New<Array>();
+      int i = 0;
+      for (cv::Point pt : pts) {
+        Nan::Set(out, i, Point::NewInstance(pt));
+        ++i;
+      }
+
+      info.GetReturnValue().Set(out);
     }
 
     NAN_METHOD(FillConvexPoly) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(3, 5);
+      ASSERT_INPUTOUTPUTARRAY_FROM_ARGS(img, 0);
+      ASSERT_ARRAY_FROM_ARGS(ptsArr, 1);
+      std::vector<cv::Point> pts;
+      for (int i = 0; i < ptsArr->Length(); ++i) {
+        try {
+          Local<Value> val = Nan::Get(ptsArr, i).ToLocalChecked();
+          pts.push_back(Point::RawPoint(1, &val));
+        } catch (char const*) {
+          return Nan::ThrowError(ERROR_INVALID_ARGUMENTS);
+        }
+      }
+      ASSERT_SCALAR_FROM_ARGS(color, 2);
+      DEFAULT_INT_FROM_ARGS(lineType, 3, cv::LINE_8);
+      DEFAULT_INT_FROM_ARGS(shift, 4, 0);
+      TRY_CATCH_THROW_OPENCV(cv::fillConvexPoly(img, pts, color, lineType, shift));
     }
 
     NAN_METHOD(FillPoly) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(3, 6);
+      ASSERT_INPUTOUTPUTARRAY_FROM_ARGS(img, 0);
+      ASSERT_ARRAY_FROM_ARGS(ptsArr, 1);
+      std::vector<cv::Point> pts;
+      for (int i = 0; i < ptsArr->Length(); ++i) {
+        try {
+          Local<Value> val = Nan::Get(ptsArr, i).ToLocalChecked();
+          pts.push_back(Point::RawPoint(1, &val));
+        } catch (char const*) {
+          return Nan::ThrowError(ERROR_INVALID_ARGUMENTS);
+        }
+      }
+      ASSERT_SCALAR_FROM_ARGS(color, 2);
+      DEFAULT_INT_FROM_ARGS(lineType, 3, cv::LINE_8);
+      DEFAULT_INT_FROM_ARGS(shift, 4, 0);
+      DEFAULT_POINT_FROM_ARGS(offset, 4, cv::Point());
+      TRY_CATCH_THROW_OPENCV(cv::fillPoly(img, pts, color, lineType, shift, offset));
     }
 
     NAN_METHOD(GetTextSize) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS(4);
+      ASSERT_STRING_FROM_ARGS(text, 0);
+      ASSERT_INT_FROM_ARGS(fontFace, 1);
+      ASSERT_DOUBLE_FROM_ARGS(fontScale, 2);
+      ASSERT_INT_FROM_ARGS(thickness, 3, 1);
+
+      int baseline;
+      Local<Value> size;
+      TRY_CATCH_THROW_OPENCV(size = Size::NewInstance(cv::getTextSize(text, fontFace, fontScale, thickness, &baseline)));
+
+      Local<Object> out = Nan::New<Object>();
+      Nan::Set(out, Nan::New<String>("baseline").ToLocalChecked(), Nan::New<Integer>(baseline));
+      Nan::Set(out, Nan::New<String>("size").ToLocalChecked(), size);
+
+      info.GetReturnValue().Set(out);
     }
 
     NAN_METHOD(Line) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(4, 7);
+      ASSERT_INPUTOUTPUTARRAY_FROM_ARGS(img, 0);
+      ASSERT_POINT_FROM_ARGS(pt1, 1);
+      ASSERT_POINT_FROM_ARGS(pt2, 2);
+      ASSERT_SCALAR_FROM_ARGS(color, 3);
+      DEFAULT_INT_FROM_ARGS(thickness, 4, 1);
+      DEFAULT_INT_FROM_ARGS(lineType, 5, cv::LINE_8);
+      DEFAULT_INT_FROM_ARGS(shift, 6, 0);
+      TRY_CATCH_THROW_OPENCV(cv::line(img, pt1, pt2, color, thickness, lineType, shift));
     }
 
     NAN_METHOD(Polylines) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(4, 7);
+      ASSERT_INPUTOUTPUTARRAY_FROM_ARGS(img, 0);
+      ASSERT_ARRAY_FROM_ARGS(ptsArr, 1);
+      std::vector<cv::Point> pts;
+      for (int i = 0; i < ptsArr->Length(); ++i) {
+        try {
+          Local<Value> val = Nan::Get(ptsArr, i).ToLocalChecked();
+          pts.push_back(Point::RawPoint(1, &val));
+        } catch (char const*) {
+          return Nan::ThrowError(ERROR_INVALID_ARGUMENTS);
+        }
+      }
+      ASSERT_BOOLEAN_FROM_ARGS(isClosed, 2);
+      ASSERT_SCALAR_FROM_ARGS(color, 3);
+      DEFAULT_INT_FROM_ARGS(thickness, 4, 1);
+      DEFAULT_INT_FROM_ARGS(lineType, 5, cv::LINE_8);
+      DEFAULT_INT_FROM_ARGS(shift, 6, 0);
+      cv::polylines(img, pts, isClosed, color, thickness, lineType, shift);
     }
 
     NAN_METHOD(PutText) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(6, 9);
+      ASSERT_INPUTOUTPUTARRAY_FROM_ARGS(img, 0);
+      ASSERT_STRING_FROM_ARGS(text, 1);
+      ASSERT_POINT_FROM_ARGS(origin, 2);
+      ASSERT_INT_FROM_ARGS(fontFace, 3);
+      ASSERT_DOUBLE_FROM_ARGS(fontScale, 4);
+      ASSERT_SCALAR_FROM_ARGS(color, 5);
+      DEFAULT_INT_FROM_ARGS(thickness, 6, 1);
+      DEFAULT_INT_FROM_ARGS(lineType, 7, cv::LINE_8);
+      DEFAULT_BOOLEAN_FROM_ARGS(bottomLeftOrigin, 8, false);
+      TRY_CATCH_THROW_OPENCV(cv::putText(img, text, origin, fontFace, fontScale, color, thickness, lineType, bottomLeftOrigin));
     }
 
     NAN_METHOD(Rectangle) {
