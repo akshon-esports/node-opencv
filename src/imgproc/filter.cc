@@ -2,6 +2,7 @@
 #include "../core/Size.h"
 #include "../core/Point.h"
 #include "../core/Scalar.h"
+#include "../core/Matrix.h"
 
 namespace ncv {
 
@@ -62,11 +63,25 @@ namespace ncv {
     }
 
     NAN_METHOD(Blur) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(3, 5);
+      ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+      ASSERT_SIZE_FROM_ARGS(ksize, 2);
+      DEFAULT_POINT_FROM_ARGS(anchor, 3, cv::Point(-1, -1));
+      DEFAULT_INT_FROM_ARGS(borderType, 4, cv::BORDER_DEFAULT);
+      TRY_CATCH_THROW_OPENCV(cv::blur(src, dst, ksize, anchor, borderType));
     }
 
     NAN_METHOD(BoxFilter) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(4, 7);
+      ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+      ASSERT_INT_FROM_ARGS(ddepth, 2);
+      ASSERT_SIZE_FROM_ARGS(ksize, 3);
+      DEFAULT_POINT_FROM_ARGS(anchor, 4, cv::Point(-1, -1));
+      DEFAULT_BOOLEAN_FROM_ARGS(normalize, 5, true);
+      DEFAULT_INT_FROM_ARGS(borderType, 6, cv::BORDER_DEFAULT);
+      TRY_CATCH_THROW_OPENCV(cv::boxFilter(src, dst, ddepth, ksize, anchor, normalize, borderType));
     }
 
     NAN_METHOD(BuildPyramid) {
@@ -86,11 +101,27 @@ namespace ncv {
     }
 
     NAN_METHOD(Erode) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(3, 7);
+      ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+      ASSERT_INPUTARRAY_FROM_ARGS(kernel, 2);
+      DEFAULT_POINT_FROM_ARGS(anchor, 3, cv::Point(-1, -1));
+      DEFAULT_INT_FROM_ARGS(iterations, 4, 1);
+      DEFAULT_INT_FROM_ARGS(borderType, 5, cv::BORDER_CONSTANT);
+      DEFAULT_SCALAR_FROM_ARGS(borderValue, 6, cv::morphologyDefaultBorderValue());
+      TRY_CATCH_THROW_OPENCV(cv::erode(src, dst, kernel, anchor, iterations, borderType, borderValue));
     }
 
     NAN_METHOD(Filter2D) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(4, 7);
+      ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+      ASSERT_INT_FROM_ARGS(ddepth, 2);
+      ASSERT_INPUTARRAY_FROM_ARGS(kernel, 3);
+      DEFAULT_POINT_FROM_ARGS(anchor, 4, cv::Point(-1, -1));
+      DEFAULT_DOUBLE_FROM_ARGS(delta, 5, 0);
+      DEFAULT_INT_FROM_ARGS(borderType, 6, cv::BORDER_DEFAULT);
+      TRY_CATCH_THROW_OPENCV(cv::filter2D(src, dst, ddepth, kernel, anchor, delta, borderType));
     }
 
     NAN_METHOD(GaussianBlur) {
@@ -106,15 +137,35 @@ namespace ncv {
     }
 
     NAN_METHOD(GetDerivKernels) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(5, 7);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(kx, 0);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(ky, 1);
+      ASSERT_INT_FROM_ARGS(dx, 2);
+      ASSERT_INT_FROM_ARGS(dy, 3);
+      ASSERT_INT_FROM_ARGS(ksize, 4);
+      DEFAULT_BOOLEAN_FROM_ARGS(normalize, 5, false);
+      DEFAULT_INT_FROM_ARGS(ktype, 6, CV_32F);
+      TRY_CATCH_THROW_OPENCV(cv::getDerivKernels(kx, ky, dx, dy, ksize, normalize, ktype));
     }
 
     NAN_METHOD(GetGaborKernel) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(5, 7);
+      ASSERT_SIZE_FROM_ARGS(ksize, 0);
+      ASSERT_DOUBLE_FROM_ARGS(sigma, 1);
+      ASSERT_DOUBLE_FROM_ARGS(theta, 2);
+      ASSERT_DOUBLE_FROM_ARGS(lambd, 3);
+      ASSERT_DOUBLE_FROM_ARGS(gamma, 4);
+      DEFAULT_DOUBLE_FROM_ARGS(psi, 5, CV_PI*0.5);
+      DEFAULT_INT_FROM_ARGS(ktype, 6, CV_64F);
+      TRY_CATCH_THROW_OPENCV(info.GetReturnValue().Set(Matrix::NewInstance(cv::getGaborKernel(ksize, sigma, theta, lambd, gamma, psi, ktype))));
     }
 
     NAN_METHOD(GetGaussianKernel) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(2, 3);
+      ASSERT_INT_FROM_ARGS(ksize, 0);
+      ASSERT_DOUBLE_FROM_ARGS(sigma, 1);
+      DEFAULT_INT_FROM_ARGS(ktype, 2, CV_64F);
+      TRY_CATCH_THROW_OPENCV(info.GetReturnValue().Set(Matrix::NewInstance(cv::getGaussianKernel(ksize, sigma, ktype))));
     }
 
     NAN_METHOD(GetStructuringElement) {
@@ -126,7 +177,11 @@ namespace ncv {
     }
 
     NAN_METHOD(MedianBlur) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS(3);
+      ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+      ASSERT_INT_FROM_ARGS(ksize, 2);
+      TRY_CATCH_THROW_OPENCV(cv::medianBlur(src, dst, ksize));
     }
 
     NAN_METHOD(MorphologyDefaultBorderValue) {
