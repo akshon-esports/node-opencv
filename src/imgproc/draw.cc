@@ -135,7 +135,7 @@ namespace ncv {
       ASSERT_INPUTOUTPUTARRAY_FROM_ARGS(img, 0);
       ASSERT_ARRAY_FROM_ARGS(ptsArr, 1);
       std::vector<cv::Point> pts;
-      for (int i = 0; i < ptsArr->Length(); ++i) {
+      for (unsigned i = 0; i < ptsArr->Length(); ++i) {
         try {
           Local<Value> val = Nan::Get(ptsArr, i).ToLocalChecked();
           pts.push_back(Point::RawPoint(1, &val));
@@ -154,7 +154,7 @@ namespace ncv {
       ASSERT_INPUTOUTPUTARRAY_FROM_ARGS(img, 0);
       ASSERT_ARRAY_FROM_ARGS(ptsArr, 1);
       std::vector<cv::Point> pts;
-      for (int i = 0; i < ptsArr->Length(); ++i) {
+      for (unsigned i = 0; i < ptsArr->Length(); ++i) {
         try {
           Local<Value> val = Nan::Get(ptsArr, i).ToLocalChecked();
           pts.push_back(Point::RawPoint(1, &val));
@@ -174,7 +174,7 @@ namespace ncv {
       ASSERT_STRING_FROM_ARGS(text, 0);
       ASSERT_INT_FROM_ARGS(fontFace, 1);
       ASSERT_DOUBLE_FROM_ARGS(fontScale, 2);
-      ASSERT_INT_FROM_ARGS(thickness, 3, 1);
+      ASSERT_INT_FROM_ARGS(thickness, 3);
 
       int baseline;
       Local<Value> size;
@@ -204,7 +204,7 @@ namespace ncv {
       ASSERT_INPUTOUTPUTARRAY_FROM_ARGS(img, 0);
       ASSERT_ARRAY_FROM_ARGS(ptsArr, 1);
       std::vector<cv::Point> pts;
-      for (int i = 0; i < ptsArr->Length(); ++i) {
+      for (unsigned i = 0; i < ptsArr->Length(); ++i) {
         try {
           Local<Value> val = Nan::Get(ptsArr, i).ToLocalChecked();
           pts.push_back(Point::RawPoint(1, &val));
