@@ -95,8 +95,8 @@ namespace ncv {
       ASSERT_DOUBLE_FROM_ARGS(minDist, 3);
       DEFAULT_DOUBLE_FROM_ARGS(param1, 4, 100);
       DEFAULT_DOUBLE_FROM_ARGS(param2, 5, 100);
-      DEFAULT_DOUBLE_FROM_ARGS(minRadius, 6, 0);
-      DEFAULT_DOUBLE_FROM_ARGS(maxRadius, 7, 0);
+      DEFAULT_INT_FROM_ARGS(minRadius, 6, 0);
+      DEFAULT_INT_FROM_ARGS(maxRadius, 7, 0);
       std::vector<cv::Vec3f> circles;
       TRY_CATCH_THROW_OPENCV(cv::HoughCircles(img, circles, method, dp, minDist, param1, param2, minRadius, maxRadius));
 
