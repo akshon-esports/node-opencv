@@ -35,6 +35,8 @@ void Matrix::Init(Local<Object> target) {
 
   Nan::SetPrototypeMethod(ctor, "clone", Clone);
 
+  Nan::SetPrototypeMethod(ctor, "copyTo", CopyTo);
+
   Nan::SetPrototypeMethod(ctor, "convertTo", ConvertTo);
   Nan::SetPrototypeMethod(ctor, "setTo", SetTo);
 
@@ -306,6 +308,14 @@ NAN_METHOD(Matrix::Clone) {
   TRY_CATCH_THROW_OPENCV(info.GetReturnValue().Set(NewInstance(self->mat.clone())));
 }
 
+NAN_METHOD(Matrix::CopyTo) {
+  FUNCTION_REQUIRE_ARGUMENTS_RANGE(1, 2);
+  SETUP_FUNCTION(Matrix);
+  ASSERT_OUTPUTARRAY_FROM_ARGS(m, 0);
+  DEFAULT_INPUTARRAY_FROM_ARGS(mask, 1, cv::noArray());
+  TRY_CATCH_THROW_OPENCV(self->mat.copyTo(m, mask));
+}
+
 NAN_METHOD(Matrix::ConvertTo) {
   FUNCTION_REQUIRE_ARGUMENTS_RANGE(1, 3);
   SETUP_FUNCTION(Matrix);
@@ -447,7 +457,7 @@ NAN_METHOD(Matrix::Resize) {
   }
 
   ASSERT_SCALAR_FROM_ARGS(scalar, 1);
-  TRY_CATCH_THROW_OPENCV(self->mat.resize(size), scalar);
+  TRY_CATCH_THROW_OPENCV(self->mat.resize(size, scalar));
 }
 
 NAN_METHOD(Matrix::PushBack) {
@@ -547,6 +557,66 @@ NAN_METHOD(Matrix::Total) {
   FUNCTION_REQUIRE_ARGUMENTS(0);
   SETUP_FUNCTION(Matrix);
   TRY_CATCH_THROW_OPENCV(info.GetReturnValue().Set(Nan::New<Number>(self->mat.total())));
+}
+
+template <typename T> Local<Value> getValuesFromPtr(uchar* raw, int channels) {
+  Nan::EscapableHandleScope scope;
+
+  T* ptr = (T*) raw;
+  Local<Array> out = Nan::New<Array>();
+  for (int i = 0; i < channels; i++) {
+    Nan::Set(out, out->Length(), Nan::New<Number>(ptr[i]));
+  }
+
+  return scope.Escape(out);
+}
+
+NAN_METHOD(Matrix::At) {
+  FUNCTION_REQUIRE_ARGUMENTS(2);
+  ASSERT_INT_FROM_ARGS(i0, 0);
+  ASSERT_INT_FROM_ARGS(i1, 1);
+  SETUP_FUNCTION(Matrix);
+  cv::Size size = self->mat.size();
+
+  if (i0 < 0 || i0 >= size.width) {
+    return Nan::ThrowError("Argument 1 exceeds matrix bounds");
+  }
+
+  if (i1 < 0 || i1 >= size.height) {
+    return Nan::ThrowError("Argument 2 exceeds matrix bounds");
+  }
+
+  uchar* raw = self->mat.ptr(i0, i1);
+  const int channels = self->mat.channels();
+
+  Local<Value> out;
+  switch (self->mat.depth()) {
+  case CV_64F:
+    out = getValuesFromPtr<double>(raw, channels);
+    break;
+  case CV_32F:
+    out = getValuesFromPtr<float>(raw, channels);
+    break;
+  case CV_32S:
+    out = getValuesFromPtr<int32_t>(raw, channels);
+    break;
+  case CV_16S:
+    out = getValuesFromPtr<int16_t>(raw, channels);
+    break;
+  case CV_16U:
+    out = getValuesFromPtr<uint16_t>(raw, channels);
+    break;
+  case CV_8S:
+    out = getValuesFromPtr<int8_t>(raw, channels);
+    break;
+  case CV_8U:
+    out = getValuesFromPtr<uint8_t>(raw, channels);
+    break;
+  default:
+    return Nan::ThrowError("Unable to handle `CV_USERTYPE1` depth");
+  }
+
+  return info.GetReturnValue().Set(out);
 }
 
 NAN_METHOD(Matrix::Size) {

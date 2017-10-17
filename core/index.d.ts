@@ -79,6 +79,8 @@ declare namespace internal {
 
         public clone(): Mat;
 
+        public copyTo(m: OutputArray, mask?: InputArray): void;
+
         public convertTo(rtype: MatrixType, scale?: number, delta?: number): Mat;
 
         public reshape(cn: number, rows?: number): Mat;
@@ -216,8 +218,16 @@ export declare class Matrix extends internal.CpuMatrix<Matrix> {
 
     public toBuffer(): Buffer;
 
+    /**
+     * @description Returns the ordered n-tuple at the location (i0, i1) as an array
+     * @return {number[]}
+     */
+    public at(i0: number, i1: number): number[];
+
     public static addWeighted(src1: InputArray, alpha: number, src2: InputArray, beta: number, gamma: number, dtype?: number): Matrix;
     public static subtract(src1: InputArray, src2: InputArray, mask?: InputArray, dtype?: number): Matrix;
+    public static vconcat(src1: InputArray, src2: InputArray): Matrix;
+    public static vconcat(src1: InputArray[]): Matrix;
 }
 
 export declare class UnifiedMatrix extends internal.CpuMatrix<UnifiedMatrix> {
@@ -594,8 +604,7 @@ export declare function sort(src: InputArray, dst: OutputArray, flags: number): 
 
 export declare function sortIdx(src: InputArray, dst: OutputArray, flags: number): void;
 
-export declare function split(src: Matrix, mvbegin: Matrix): void;
-export declare function split(m: InputArray, mv: OutputArray[]): void;
+export declare function split(m: InputArray): Matrix[];
 
 export declare function sqrt(src: InputArray, dst: OutputArray): void;
 

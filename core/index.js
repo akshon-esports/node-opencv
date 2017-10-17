@@ -22,4 +22,10 @@ core.Matrix.subtract = function() {
   return out;
 };
 
+core.Matrix.vconcat = function() {
+  var out = new core.Matrix();
+  core.vconcat.apply(global, Array.from(arguments).concat(out));
+  return out;
+};
+
 module.exports = core;

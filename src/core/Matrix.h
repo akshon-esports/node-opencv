@@ -43,6 +43,8 @@ public:
 
   static NAN_METHOD(Clone);
 
+  static NAN_METHOD(CopyTo);
+
   static NAN_METHOD(ConvertTo);
   static NAN_METHOD(SetTo);
 
@@ -81,6 +83,8 @@ public:
   static NAN_METHOD(Step1);
   static NAN_METHOD(Empty);
   static NAN_METHOD(Total);
+
+  static NAN_METHOD(At);
 
   static NAN_METHOD(Size);
 

@@ -1,6 +1,7 @@
 #include "array.h"
 #include "Point.h"
 #include "Scalar.h"
+#include "Matrix.h"
 
 namespace ncv {
 
@@ -373,7 +374,17 @@ namespace ncv {
     }
 
     NAN_METHOD(Split) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS(1);
+      ASSERT_INPUTARRAY_FROM_ARGS(m, 0);
+      std::vector<cv::Mat> mv;
+      TRY_CATCH_THROW_OPENCV(cv::split(m, mv));
+
+      Local<Array> out = Nan::New<Array>();
+      for (const cv::Mat &m : mv) {
+        Nan::Set(out, out->Length(), Matrix::NewInstance(m));
+      }
+
+      info.GetReturnValue().Set(out);
     }
 
     NAN_METHOD(Sqrt) {
@@ -424,7 +435,27 @@ namespace ncv {
     }
 
     NAN_METHOD(Vconcat) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(2, 3);
+      if (info.Length() == 2) {
+        ASSERT_ARRAY_FROM_ARGS(mats, 0);
+        std::vector<cv::_InputArray> src;
+        for (unsigned i = 0; i < mats->Length(); i++) {
+          Local<Value> mat = Nan::Get(mats, i).ToLocalChecked();
+          try {
+            cv::_InputArray in = ReadInputArray(mat);
+            src.push_back(in);
+          } catch (char const*) {
+            return Nan::ThrowError(ERROR_INVALID_ARGUMENTS);
+          }
+        }
+        ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+        TRY_CATCH_THROW_OPENCV(cv::vconcat(src, dst));
+      } else {
+        ASSERT_INPUTARRAY_FROM_ARGS(src1, 0);
+        ASSERT_INPUTARRAY_FROM_ARGS(src2, 1);
+        ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 2);
+        TRY_CATCH_THROW_OPENCV(cv::vconcat(src1, src2, dst));
+      }
     }
 
     void ArrayInit(Local<Object> &target) {
