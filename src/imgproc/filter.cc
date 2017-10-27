@@ -205,6 +205,15 @@ namespace ncv {
 		TRY_CATCH_THROW_OPENCV(cv::morphologyEx(src, dst, op, kernel, anchor, iterations, borderType, borderValue));
     }
 
+	NAN_METHOD(PyrDown) {
+		FUNCTION_REQUIRE_ARGUMENTS(2, 4);
+		ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+		ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+		DEFAULT_SIZE_FROM_ARGS(size, 2 , cv::Size());
+		DEFAULT_INT_FROM_ARGS(borderType, 3, cv::BORDER_DEFAULT);
+		TRY_CATCH_THROW_OPENCV(cv::pyrDown(src, dst, size, borderType));
+		
+  }
 
     NAN_METHOD(PyrMeanShiftFiltering) {
       NotImplemented(info);
