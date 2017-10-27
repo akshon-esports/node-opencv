@@ -186,6 +186,10 @@ namespace ncv {
 
     NAN_METHOD(MorphologyDefaultBorderValue) {
       NotImplemented(info);
+		FUNCTION_REQUIRE_ARGUMENTS(0);
+		cv::Scalar value;
+		TRY_CATCH_THROW_OPENCV(value = cv::morphologyDefaultBorderValue());
+		info.GetReturnValue().Set(Scalar::NewInstance(value));
     }
 
     NAN_METHOD(MorphologyEx) {
