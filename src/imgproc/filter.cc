@@ -185,7 +185,6 @@ namespace ncv {
     }
 
     NAN_METHOD(MorphologyDefaultBorderValue) {
-      NotImplemented(info);
 		FUNCTION_REQUIRE_ARGUMENTS(0);
 		cv::Scalar value;
 		TRY_CATCH_THROW_OPENCV(value = cv::morphologyDefaultBorderValue());
@@ -215,7 +214,6 @@ namespace ncv {
 		
   }
 
-      NotImplemented(info);
 	NAN_METHOD(PyrMeanShiftFiltering) {
 		FUNCTION_REQUIRE_ARGUMENTS(4, 6);
 		ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
@@ -228,27 +226,81 @@ namespace ncv {
     }
 
     NAN_METHOD(PyrUp) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS(2,4);
+	  ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+	  ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+	  DEFAULT_SIZE_FROM_ARGS(size, 2, cv::Size());
+	  DEFAULT_INT_FROM_ARGS(boderType, 4, cv::BORDER_DEFAULT);
+	  TRY_CATCH_THROW_OPENCV(cv::pyrUp(src, dst, size, boderType));
+
     }
 
     NAN_METHOD(Scharr) {
-      NotImplemented(info);
+		FUNCTION_REQUIRE_ARGUMENTS(6, 8);
+		ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+		ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+		ASSERT_INT_FROM_ARGS(ddepth, 2);
+		ASSERT_INT_FROM_ARGS(dx, 3);
+		ASSERT_INT_FROM_ARGS(dy, 4);
+		DEFAULT_DOUBLE_FROM_ARGS(scale, 5, 1);
+		DEFAULT_DOUBLE_FROM_ARGS(delta, 6, 0);
+		DEFAULT_INT_FROM_ARGS(borderType, 7, cv::BORDER_DEFAULT);
+		TRY_CATCH_THROW_OPENCV(cv::Scharr(src, dst, ddepth, dx, dy, scale, delta, borderType));
+
     }
 
     NAN_METHOD(SepFilter2D) {
-      NotImplemented(info);
+		FUNCTION_REQUIRE_ARGUMENTS(5, 8);
+		ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+		ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+		ASSERT_INT_FROM_ARGS(ddepth, 2);
+		ASSERT_INPUTARRAY_FROM_ARGS(kernelX, 3);
+		ASSERT_INPUTARRAY_FROM_ARGS(kernelY, 4);
+		DEFAULT_POINT_FROM_ARGS(anchor, 5, cv::Point(-1, -1));
+		DEFAULT_DOUBLE_FROM_ARGS(delta, 6, 0);
+		DEFAULT_INT_FROM_ARGS(borderType, 7, cv::BORDER_DEFAULT);
+		TRY_CATCH_THROW_OPENCV(cv::sepFilter2D(src, dst, ddepth, kernelX, kernelY, anchor, delta, borderType));
+
     }
 
     NAN_METHOD(Sobel) {
-      NotImplemented(info);
+		FUNCTION_REQUIRE_ARGUMENTS(5, 9);
+		ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+		ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+		ASSERT_INT_FROM_ARGS(ddepth, 2);
+		ASSERT_INT_FROM_ARGS(dx, 3);
+		ASSERT_INT_FROM_ARGS(dy, 4);
+		DEFAULT_INT_FROM_ARGS(ksize, 5, 3);
+		DEFAULT_INT_FROM_ARGS(scale, 6, 1);
+		DEFAULT_INT_FROM_ARGS(delta, 7, 0);
+		DEFAULT_INT_FROM_ARGS(borderType, 8, cv::BORDER_DEFAULT);
+		TRY_CATCH_THROW_OPENCV(cv::Sobel(src, dst, ddepth, dx, dy, ksize, scale, delta, borderType));
+
     }
 
-    NAN_METHOD(SpatialGradient) {
-      NotImplemented(info);
-    }
+	NAN_METHOD(SpatialGradient) {
+		FUNCTION_REQUIRE_ARGUMENTS(3, 5);
+		ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+		ASSERT_OUTPUTARRAY_FROM_ARGS(dx, 1);
+		ASSERT_OUTPUTARRAY_FROM_ARGS(dy, 2);
+		DEFAULT_INT_FROM_ARGS(ksize, 3, 3);
+		DEFAULT_INT_FROM_ARGS(borderType, 4, cv::BORDER_DEFAULT);
+		TRY_CATCH_THROW_OPENCV(cv::spatialGradient(src, dx, dy, ksize, borderType));
+	}
+
 
     NAN_METHOD(SqrBoxFilter) {
-      NotImplemented(info);
+		FUNCTION_REQUIRE_ARGUMENTS(4, 7);
+		ASSERT_INPUTARRAY_FROM_ARGS(_src, 0);
+		ASSERT_OUTPUTARRAY_FROM_ARGS(_dst, 1);
+		ASSERT_INT_FROM_ARGS(ddepth, 2);
+		ASSERT_SIZE_FROM_ARGS(ksize, 3);
+		DEFAULT_POINT_FROM_ARGS(anchor, 4, cv::Point(-1, -1));
+		DEFAULT_BOOLEAN_FROM_ARGS(normalize, 5, true);
+		DEFAULT_INT_FROM_ARGS(borderType, 6, cv::BORDER_DEFAULT);
+		TRY_CATCH_THROW_OPENCV(cv::sqrBoxFilter(_src, _dst, ddepth, ksize, anchor, normalize, borderType));
+
+
     }
 
   }
