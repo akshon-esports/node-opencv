@@ -215,8 +215,16 @@ namespace ncv {
 		
   }
 
-    NAN_METHOD(PyrMeanShiftFiltering) {
       NotImplemented(info);
+	NAN_METHOD(PyrMeanShiftFiltering) {
+		FUNCTION_REQUIRE_ARGUMENTS(4, 6);
+		ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+		ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+		ASSERT_DOUBLE_FROM_ARGS(sp, 2);
+		ASSERT_DOUBLE_FROM_ARGS(sr, 3);
+		DEFAULT_INT_FROM_ARGS(maxlevel, 4, 1);
+		// TODO add TermCriteria
+		TRY_CATCH_THROW_OPENCV(cv::pyrMeanShiftFiltering(src, dst, sp, sr, maxlevel));
     }
 
     NAN_METHOD(PyrUp) {
