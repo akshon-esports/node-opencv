@@ -189,7 +189,16 @@ namespace ncv {
     }
 
     NAN_METHOD(MorphologyEx) {
-      NotImplemented(info);
+		FUNCTION_REQUIRE_ARGUMENTS_RANGE(4, 8);
+		ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+		ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+		ASSERT_INT_FROM_ARGS(op, 2);
+		ASSERT_INPUTARRAY_FROM_ARGS(kernel, 3);
+		DEFAULT_POINT_FROM_ARGS(anchor, 4, cv::Point(-1, -1));
+		DEFAULT_INT_FROM_ARGS(iterations, 5, 1);
+		DEFAULT_INT_FROM_ARGS(borderType, 6, cv::BORDER_CONSTANT);
+		DEFAULT_SCALAR_FROM_ARGS(borderValue, 7, cv::morphologyDefaultBorderValue());
+		TRY_CATCH_THROW_OPENCV(cv::morphologyEx(src, dst, op, kernel, anchor, iterations, borderType, borderValue));
     }
 
     NAN_METHOD(PyrDown) {
