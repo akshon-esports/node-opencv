@@ -201,9 +201,6 @@ namespace ncv {
 		TRY_CATCH_THROW_OPENCV(cv::morphologyEx(src, dst, op, kernel, anchor, iterations, borderType, borderValue));
     }
 
-    NAN_METHOD(PyrDown) {
-      NotImplemented(info);
-    }
 
     NAN_METHOD(PyrMeanShiftFiltering) {
       NotImplemented(info);
