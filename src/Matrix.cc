@@ -1118,18 +1118,95 @@ NAN_METHOD(Matrix::Eye) {
   info.GetReturnValue().Set(im_h);
 }
 
+class ConvertGrayscaleASyncWorker: public Nan::AsyncWorker {
+public:
+  ConvertGrayscaleASyncWorker(Nan::Callback *callback, Matrix *image) :
+      Nan::AsyncWorker(callback),
+      image(image),
+      res(0){
+  }
+
+  ~ConvertGrayscaleASyncWorker() {
+  }
+
+  void Execute() {
+    try {
+        cv::cvtColor(image->mat, image->mat, CV_BGR2GRAY);
+        res = 1;
+    } catch(...){
+        res = 0;
+    }
+  }
+
+  void HandleOKCallback() {
+    Nan::HandleScope scope;
+    
+    if (res){
+        Local<Value> argv[] = {
+          Nan::Null(), // err
+          Nan::New<Number>(res) //result
+        };
+
+        Nan::TryCatch try_catch;
+        callback->Call(2, argv);
+        if (try_catch.HasCaught()) {
+          Nan::FatalException(try_catch);
+        }
+    } else {
+        Local<Value> argv[] = {
+          Nan::New("C++ exception").ToLocalChecked(), // err
+          Nan::New<Number>(res) //result
+        };
+
+        Nan::TryCatch try_catch;
+        callback->Call(2, argv);
+        if (try_catch.HasCaught()) {
+          Nan::FatalException(try_catch);
+        }
+    }
+  }
+
+private:
+  Matrix *image;
+  int res;
+};
+
+
 NAN_METHOD(Matrix::ConvertGrayscale) {
   Nan::HandleScope scope;
 
   Matrix *self = Nan::ObjectWrap::Unwrap<Matrix>(info.This());
-  if (self->mat.channels() != 3) {
-    Nan::ThrowError("Image is no 3-channel");
+
+  // if we have an argument, if it's a function, then use async
+  if(info.Length() > 0){
+    REQ_FUN_ARG(0, cb);
+    Nan::Callback *callback = new Nan::Callback(cb.As<Function>());
+    // if not a 3 channel image, just callback immediately with error.
+    if (self->mat.channels() != 3) {
+        Local<Value> argv[] = {
+          Nan::New("Image is no 3-channel").ToLocalChecked(), // err
+          Nan::New<Number>(0) //result
+        };
+
+        Nan::TryCatch try_catch;
+        callback->Call(2, argv);
+        if (try_catch.HasCaught()) {
+          Nan::FatalException(try_catch);
+        }
+    } else {
+        Nan::AsyncQueueWorker(new ConvertGrayscaleASyncWorker(callback, self));
+    }
+  } else {
+    if (self->mat.channels() != 3) {
+        Nan::ThrowError("Image is no 3-channel");
+    }
+    cv::cvtColor(self->mat, self->mat, CV_BGR2GRAY);
+    info.GetReturnValue().Set(Nan::Null());
   }
-
-  cv::cvtColor(self->mat, self->mat, CV_BGR2GRAY);
-
-  info.GetReturnValue().Set(Nan::Null());
 }
+
+
+
 
 NAN_METHOD(Matrix::ConvertHSVscale) {
   Nan::HandleScope scope;
@@ -1882,12 +1959,12 @@ NAN_METHOD(Matrix::Resize) {
   DOUBLE_FROM_ARGS(fy, 2)
   INT_FROM_ARGS(interpolation, 3)
 
-  Local<Object> res = NewInstance();
+    Local<Object> res = NewInstance();
 
-  cv::resize(self->mat, Nan::ObjectWrap::Unwrap<Matrix>(res)->mat, size, fx, fy, interpolation);
+    cv::resize(self->mat, Nan::ObjectWrap::Unwrap<Matrix>(res)->mat, size, fx, fy, interpolation);
 
-  info.GetReturnValue().Set(res);
-}
+    info.GetReturnValue().Set(res);
+  }
 
 NAN_METHOD(Matrix::Rotate) {
   Nan::HandleScope scope;
