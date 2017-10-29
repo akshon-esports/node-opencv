@@ -1933,6 +1933,80 @@ cv::Rect* setRect(Local<Object> objRect, cv::Rect &result) {
   return &result;
 }
 
+class ResizeASyncWorker: public Nan::AsyncWorker {
+public:
+  ResizeASyncWorker(Nan::Callback *callback, Matrix *image, cv::Size size, double fx, double fy, int interpolation) :
+      Nan::AsyncWorker(callback),
+      image(image),
+      size(size),
+      fx(fx),
+      fy(fy),
+      interpolation(interpolation),
+      success(0){
+  }
+
+  ~ResizeASyncWorker() {
+  }
+
+  void Execute() {
+    try {
+        dest = new Matrix();
+        cv::resize(image->mat, dest->mat, size, fx, fy, interpolation);
+        success = 1;
+    } catch(...){
+        success = 0;
+    }
+  }
+
+  void HandleOKCallback() {
+    Nan::HandleScope scope;
+    
+    if (success){
+        Local<Object> im_to_return= Nan::NewInstance(Nan::GetFunction(Nan::New(Matrix::constructor)).ToLocalChecked()).ToLocalChecked();
+        Matrix *img = Nan::ObjectWrap::Unwrap<Matrix>(im_to_return);
+        img->mat = dest->mat;
+        delete dest;
+        
+        //delete dest;
+        
+        Local<Value> argv[] = {
+          Nan::Null(), // err
+          im_to_return //result
+        };
+
+        Nan::TryCatch try_catch;
+        callback->Call(2, argv);
+        if (try_catch.HasCaught()) {
+          Nan::FatalException(try_catch);
+        }
+    } else {
+        delete dest;
+        
+        Local<Value> argv[] = {
+          Nan::New("C++ exception").ToLocalChecked(), // err
+          Nan::Null() //result
+        };
+
+        Nan::TryCatch try_catch;
+        callback->Call(2, argv);
+        if (try_catch.HasCaught()) {
+          Nan::FatalException(try_catch);
+        }
+    }
+  }
+
+private:
+  Matrix *image;
+  Matrix *dest;
+  cv::Size size;
+  double fx;
+  double fy;
+  int interpolation;
+  int success;
+
+};
+
+
 NAN_METHOD(Matrix::Resize) {
   SETUP_FUNCTION(Matrix)
 
@@ -1940,9 +2014,15 @@ NAN_METHOD(Matrix::Resize) {
     return Nan::ThrowError("Matrix.resize requires at least 1 argument");
   }
 
+  // if we want async
+  int offset = 0;
+  if (info[0]->IsFunction()){
+      offset = 1;
+  }
+
   cv::Size size;
   try {
-    size = Size::RawSize(1, new Local<Value>[1] { info[0] });
+    size = Size::RawSize(1, new Local<Value>[1] { info[0+offset] });
   } catch(const char* msg) {
     return Nan::ThrowTypeError(msg);
   }
@@ -1955,16 +2035,22 @@ NAN_METHOD(Matrix::Resize) {
   double fy = 0;
   int interpolation = cv::INTER_LINEAR;
 
-  DOUBLE_FROM_ARGS(fx, 1)
-  DOUBLE_FROM_ARGS(fy, 2)
-  INT_FROM_ARGS(interpolation, 3)
+  DOUBLE_FROM_ARGS(fx, 1+offset)
+  DOUBLE_FROM_ARGS(fy, 2+offset)
+  INT_FROM_ARGS(interpolation, 3+offset)
 
+  // if async
+  if (offset){
+    REQ_FUN_ARG(0, cb);
+    Nan::Callback *callback = new Nan::Callback(cb.As<Function>());
+    Nan::AsyncQueueWorker(new ResizeASyncWorker(callback, self, size, fx, fy, interpolation));
+    info.GetReturnValue().Set(Nan::Null());
+  } else {
     Local<Object> res = NewInstance();
-
     cv::resize(self->mat, Nan::ObjectWrap::Unwrap<Matrix>(res)->mat, size, fx, fy, interpolation);
-
     info.GetReturnValue().Set(res);
   }
+}
 
 NAN_METHOD(Matrix::Rotate) {
   Nan::HandleScope scope;
