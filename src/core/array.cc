@@ -104,7 +104,16 @@ namespace ncv {
     }
 
     NAN_METHOD(CopyMakeBorder) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(7, 8);
+      ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+      ASSERT_INT_FROM_ARGS(top, 2);
+      ASSERT_INT_FROM_ARGS(bottom, 3);
+      ASSERT_INT_FROM_ARGS(left, 4);
+      ASSERT_INT_FROM_ARGS(right, 5);
+      ASSERT_INT_FROM_ARGS(borderType, 6);
+      DEFAULT_SCALAR_FROM_ARGS(value, 7, cv::Scalar());
+      TRY_CATCH_THROW_OPENCV(cv::copyMakeBorder(src, dst, top, bottom, left, right, borderType, value));
     }
 
     NAN_METHOD(CountNonZero) {
@@ -160,7 +169,27 @@ namespace ncv {
     }
 
     NAN_METHOD(Hconcat) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(2, 3);
+      if (info.Length() == 2) {
+        ASSERT_ARRAY_FROM_ARGS(mats, 0);
+        std::vector<cv::_InputArray> src;
+        for (unsigned i = 0; i < mats->Length(); i++) {
+          Local<Value> mat = Nan::Get(mats, i).ToLocalChecked();
+          try {
+            cv::_InputArray in = ReadInputArray(mat);
+            src.push_back(in);
+          } catch (char const*) {
+            return Nan::ThrowError(ERROR_INVALID_ARGUMENTS);
+          }
+        }
+        ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+        TRY_CATCH_THROW_OPENCV(cv::hconcat(src, dst));
+      } else {
+        ASSERT_INPUTARRAY_FROM_ARGS(src1, 0);
+        ASSERT_INPUTARRAY_FROM_ARGS(src2, 1);
+        ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 2);
+        TRY_CATCH_THROW_OPENCV(cv::hconcat(src1, src2, dst));
+      }
     }
 
     NAN_METHOD(Idct) {

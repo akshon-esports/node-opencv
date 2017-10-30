@@ -228,6 +228,8 @@ export declare class Matrix extends internal.CpuMatrix<Matrix> {
     public static subtract(src1: InputArray, src2: InputArray, mask?: InputArray, dtype?: number): Matrix;
     public static vconcat(src1: InputArray, src2: InputArray): Matrix;
     public static vconcat(src1: InputArray[]): Matrix;
+    public static hconcat(src1: InputArray, src2: InputArray): Matrix;
+    public static hconcat(src1: InputArray[]): Matrix;
 }
 
 export declare class UnifiedMatrix extends internal.CpuMatrix<UnifiedMatrix> {

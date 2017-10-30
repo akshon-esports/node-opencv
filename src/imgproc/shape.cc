@@ -139,7 +139,12 @@ namespace ncv {
     }
 
     NAN_METHOD(MatchShapes) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS(4);
+      ASSERT_INPUTARRAY_FROM_ARGS(contour1, 0);
+      ASSERT_INPUTARRAY_FROM_ARGS(contour2, 1);
+      ASSERT_INT_FROM_ARGS(method, 2);
+      ASSERT_DOUBLE_FROM_ARGS(parameter, 3);
+      TRY_CATCH_THROW_OPENCV(info.GetReturnValue().Set(Nan::New<Number>(cv::matchShapes(contour1, contour2, method, parameter))));
     }
 
     NAN_METHOD(MinAreaRect) {

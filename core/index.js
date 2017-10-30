@@ -28,4 +28,10 @@ core.Matrix.vconcat = function() {
   return out;
 };
 
+core.Matrix.hconcat = function() {
+  var out = new core.Matrix();
+  core.hconcat.apply(global, Array.from(arguments).concat(out));
+  return out;
+};
+
 module.exports = core;
