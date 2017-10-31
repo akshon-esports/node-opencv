@@ -1118,18 +1118,95 @@ NAN_METHOD(Matrix::Eye) {
   info.GetReturnValue().Set(im_h);
 }
 
+class ConvertGrayscaleASyncWorker: public Nan::AsyncWorker {
+public:
+  ConvertGrayscaleASyncWorker(Nan::Callback *callback, Matrix *image) :
+      Nan::AsyncWorker(callback),
+      image(image),
+      res(0){
+  }
+
+  ~ConvertGrayscaleASyncWorker() {
+  }
+
+  void Execute() {
+    try {
+        cv::cvtColor(image->mat, image->mat, CV_BGR2GRAY);
+        res = 1;
+    } catch(...){
+        res = 0;
+    }
+  }
+
+  void HandleOKCallback() {
+    Nan::HandleScope scope;
+    
+    if (res){
+        Local<Value> argv[] = {
+          Nan::Null(), // err
+          Nan::New<Number>(res) //result
+        };
+
+        Nan::TryCatch try_catch;
+        callback->Call(2, argv);
+        if (try_catch.HasCaught()) {
+          Nan::FatalException(try_catch);
+        }
+    } else {
+        Local<Value> argv[] = {
+          Nan::New("C++ exception").ToLocalChecked(), // err
+          Nan::New<Number>(res) //result
+        };
+
+        Nan::TryCatch try_catch;
+        callback->Call(2, argv);
+        if (try_catch.HasCaught()) {
+          Nan::FatalException(try_catch);
+        }
+    }
+  }
+
+private:
+  Matrix *image;
+  int res;
+};
+
+
 NAN_METHOD(Matrix::ConvertGrayscale) {
   Nan::HandleScope scope;
 
   Matrix *self = Nan::ObjectWrap::Unwrap<Matrix>(info.This());
-  if (self->mat.channels() != 3) {
-    Nan::ThrowError("Image is no 3-channel");
+
+  // if we have an argument, if it's a function, then use async
+  if(info.Length() > 0){
+    REQ_FUN_ARG(0, cb);
+    Nan::Callback *callback = new Nan::Callback(cb.As<Function>());
+    // if not a 3 channel image, just callback immediately with error.
+    if (self->mat.channels() != 3) {
+        Local<Value> argv[] = {
+          Nan::New("Image is no 3-channel").ToLocalChecked(), // err
+          Nan::New<Number>(0) //result
+        };
+
+        Nan::TryCatch try_catch;
+        callback->Call(2, argv);
+        if (try_catch.HasCaught()) {
+          Nan::FatalException(try_catch);
+        }
+    } else {
+        Nan::AsyncQueueWorker(new ConvertGrayscaleASyncWorker(callback, self));
+    }
+  } else {
+    if (self->mat.channels() != 3) {
+        Nan::ThrowError("Image is no 3-channel");
+    }
+    cv::cvtColor(self->mat, self->mat, CV_BGR2GRAY);
+    info.GetReturnValue().Set(Nan::Null());
   }
-
-  cv::cvtColor(self->mat, self->mat, CV_BGR2GRAY);
-
-  info.GetReturnValue().Set(Nan::Null());
 }
+
+
+
 
 NAN_METHOD(Matrix::ConvertHSVscale) {
   Nan::HandleScope scope;
@@ -1856,6 +1933,80 @@ cv::Rect* setRect(Local<Object> objRect, cv::Rect &result) {
   return &result;
 }
 
+class ResizeASyncWorker: public Nan::AsyncWorker {
+public:
+  ResizeASyncWorker(Nan::Callback *callback, Matrix *image, cv::Size size, double fx, double fy, int interpolation) :
+      Nan::AsyncWorker(callback),
+      image(image),
+      size(size),
+      fx(fx),
+      fy(fy),
+      interpolation(interpolation),
+      success(0){
+  }
+
+  ~ResizeASyncWorker() {
+  }
+
+  void Execute() {
+    try {
+        dest = new Matrix();
+        cv::resize(image->mat, dest->mat, size, fx, fy, interpolation);
+        success = 1;
+    } catch(...){
+        success = 0;
+    }
+  }
+
+  void HandleOKCallback() {
+    Nan::HandleScope scope;
+    
+    if (success){
+        Local<Object> im_to_return= Nan::NewInstance(Nan::GetFunction(Nan::New(Matrix::constructor)).ToLocalChecked()).ToLocalChecked();
+        Matrix *img = Nan::ObjectWrap::Unwrap<Matrix>(im_to_return);
+        img->mat = dest->mat;
+        delete dest;
+        
+        //delete dest;
+        
+        Local<Value> argv[] = {
+          Nan::Null(), // err
+          im_to_return //result
+        };
+
+        Nan::TryCatch try_catch;
+        callback->Call(2, argv);
+        if (try_catch.HasCaught()) {
+          Nan::FatalException(try_catch);
+        }
+    } else {
+        delete dest;
+        
+        Local<Value> argv[] = {
+          Nan::New("C++ exception").ToLocalChecked(), // err
+          Nan::Null() //result
+        };
+
+        Nan::TryCatch try_catch;
+        callback->Call(2, argv);
+        if (try_catch.HasCaught()) {
+          Nan::FatalException(try_catch);
+        }
+    }
+  }
+
+private:
+  Matrix *image;
+  Matrix *dest;
+  cv::Size size;
+  double fx;
+  double fy;
+  int interpolation;
+  int success;
+
+};
+
+
 NAN_METHOD(Matrix::Resize) {
   SETUP_FUNCTION(Matrix)
 
@@ -1863,9 +2014,15 @@ NAN_METHOD(Matrix::Resize) {
     return Nan::ThrowError("Matrix.resize requires at least 1 argument");
   }
 
+  // if we want async
+  int offset = 0;
+  if (info[0]->IsFunction()){
+      offset = 1;
+  }
+
   cv::Size size;
   try {
-    size = Size::RawSize(1, new Local<Value>[1] { info[0] });
+    size = Size::RawSize(1, new Local<Value>[1] { info[0+offset] });
   } catch(const char* msg) {
     return Nan::ThrowTypeError(msg);
   }
@@ -1878,15 +2035,21 @@ NAN_METHOD(Matrix::Resize) {
   double fy = 0;
   int interpolation = cv::INTER_LINEAR;
 
-  DOUBLE_FROM_ARGS(fx, 1)
-  DOUBLE_FROM_ARGS(fy, 2)
-  INT_FROM_ARGS(interpolation, 3)
+  DOUBLE_FROM_ARGS(fx, 1+offset)
+  DOUBLE_FROM_ARGS(fy, 2+offset)
+  INT_FROM_ARGS(interpolation, 3+offset)
 
-  Local<Object> res = NewInstance();
-
-  cv::resize(self->mat, Nan::ObjectWrap::Unwrap<Matrix>(res)->mat, size, fx, fy, interpolation);
-
-  info.GetReturnValue().Set(res);
+  // if async
+  if (offset){
+    REQ_FUN_ARG(0, cb);
+    Nan::Callback *callback = new Nan::Callback(cb.As<Function>());
+    Nan::AsyncQueueWorker(new ResizeASyncWorker(callback, self, size, fx, fy, interpolation));
+    info.GetReturnValue().Set(Nan::Null());
+  } else {
+    Local<Object> res = NewInstance();
+    cv::resize(self->mat, Nan::ObjectWrap::Unwrap<Matrix>(res)->mat, size, fx, fy, interpolation);
+    info.GetReturnValue().Set(res);
+  }
 }
 
 NAN_METHOD(Matrix::Rotate) {
