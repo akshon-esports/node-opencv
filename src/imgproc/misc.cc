@@ -6,7 +6,6 @@ namespace ncv {
 
     NAN_METHOD(AdaptiveThreshold) {
       FUNCTION_REQUIRE_ARGUMENTS(7);
-      Nan::HandleScope scope;
       ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
       ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
       ASSERT_DOUBLE_FROM_ARGS(maxval, 2);
@@ -19,7 +18,6 @@ namespace ncv {
 
     NAN_METHOD(CvtColor) {
       FUNCTION_REQUIRE_ARGUMENTS_RANGE(3, 4);
-      Nan::HandleScope scope;
       ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
       ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
       ASSERT_INT_FROM_ARGS(code, 2);
