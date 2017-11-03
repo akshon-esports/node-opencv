@@ -28,7 +28,24 @@ namespace ncv {
     }
 
     NAN_METHOD(DistanceTransform) {
-      NotImplemented(info);
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(4, 6);
+      ASSERT_INPUTARRAY_FROM_ARGS(src, 0);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 1);
+      cv::_OutputArray labels = cv::noArray();
+      int argumentsOffset = 0;
+      if (!info[2]->IsNumber()) {
+        ASSERT_OUTPUTARRAY_FROM_ARGS(_labels, 2);
+        labels = _labels;
+      }
+      ASSERT_INT_FROM_ARGS(distanceType, 2 + argumentsOffset);
+      ASSERT_INT_FROM_ARGS(maskSize, 3 + argumentsOffset);
+      TRY_CATCH_THROW_OPENCV(if (argumentsOffset > 0) {
+        DEFAULT_INT_FROM_ARGS(labelType, 4 + argumentsOffset, cv::DIST_LABEL_CCOMP);
+        cv::distanceTransform(src, dst, labels, distanceType, maskSize, labelType);
+      } else {
+        DEFAULT_INT_FROM_ARGS(dstType, 4 + argumentsOffset, CV_32F);
+        cv::distanceTransform(src, dst, distanceType, maskSize, dstType);
+      });
     }
 
     NAN_METHOD(FloodFill) {
