@@ -6,7 +6,8 @@
 #define TRY_CATCH_POINT_FROM_ARGS(NAME, IND, CATCH) \
   cv::Point NAME; \
   try { \
-    NAME = Point::RawPoint(1, &info[IND]); \
+    Local<Value> val = info[IND]; \
+    NAME = Point::RawPoint(1, &val); \
   } catch (const char *) { \
     CATCH \
   }

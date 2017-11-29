@@ -2,9 +2,9 @@
 #include "../core/Point.h"
 #include "../core/Rect.h"
 #include "../core/Scalar.h"
-#include "Contour.h"
 #include "../core/Size.h"
 #include "../core/Matrix.h"
+#include "Contours.h"
 
 namespace ncv {
 
@@ -83,7 +83,7 @@ namespace ncv {
       FUNCTION_REQUIRE_ARGUMENTS_RANGE(4, 8);
       Nan::HandleScope scope;
       ASSERT_INPUTOUTPUTARRAY_FROM_ARGS(img, 0);
-      ASSERT_CONTOUR_FROM_ARGS(contours, 1);
+      ASSERT_CONTOURS_FROM_ARGS(contours, 1);
       ASSERT_INT_FROM_ARGS(idx, 2);
       ASSERT_SCALAR_FROM_ARGS(color, 3);
       DEFAULT_INT_FROM_ARGS(thickness, 4, 1);

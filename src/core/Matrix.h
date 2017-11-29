@@ -14,7 +14,7 @@
     return THROW_INVALID_ARGUMENT_TYPE(IND, "a Matrix"); \
   }
 
-class NCV_CORE_EXTERN Matrix : Nan::ObjectWrap {
+class NCV_CORE_EXTERN Matrix : public Nan::ObjectWrap {
 private:
   static Nan::Persistent<FunctionTemplate> constructor;
 

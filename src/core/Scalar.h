@@ -6,7 +6,8 @@
 #define _TRY_CATCH_SCALAR_FROM_ARGS(NAME, IND, CATCH) \
   cv::Scalar NAME; \
   try { \
-    NAME = Scalar::RawScalar(1, &info[IND]); \
+    Local<Value> arg = info[IND]; \
+    NAME = Scalar::RawScalar(1, &arg); \
   } catch (const char *) { \
     CATCH \
   }

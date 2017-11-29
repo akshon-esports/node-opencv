@@ -359,16 +359,21 @@ NAN_METHOD(Matrix::Reshape) {
     TRY_CATCH_THROW_OPENCV(self->mat.reshape(cn, rows));
   } else if (info[1]->IsArray()) {
     Local<Array> arr = Local<Array>::Cast(info[1]);
-    std::vector<int> newShape(arr->Length());
+    int newndims = arr->Length();
+    int *newsz = new int[newndims];
     for (unsigned i = 0; i < arr->Length(); ++i) {
-      if (!arr->IsNumber()) {
+      Local<Value> val = arr->Get(i);
+      if (!val->IsNumber()) {
+        delete[] newsz;
         return Nan::ThrowError(ERROR_INVALID_ARGUMENTS);
       }
 
-      newShape.push_back(arr->Int32Value());
+      newsz[i] = val->Int32Value();
     }
 
-    TRY_CATCH_THROW_OPENCV(self->mat.reshape(cn, newShape));
+    TRY_CATCH_THEN_THROW_OPENCV(self->mat.reshape(cn, newndims, newsz), delete[] newsz);
+
+    delete[] newsz;
   }
 
   return Nan::ThrowError(ERROR_INVALID_ARGUMENTS);
@@ -422,7 +427,7 @@ NAN_METHOD(Matrix::Create) {
       Local<Value> val = info[0];
       cv::Size size = Size::RawSize(1, &val);
       ASSERT_INT_FROM_ARGS(type, 1);
-      TRY_CATCH_THROW_OPENCV(self->mat.create(size, info[1]->NumberValue()));
+      TRY_CATCH_THROW_OPENCV(self->mat.create(size, type));
       return;
     } catch (char const*) {}
   } else if (info.Length() == 3 && info[0]->IsNumber() && info[1]->IsNumber() && info[2]->IsNumber()) {

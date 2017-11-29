@@ -6,7 +6,8 @@
 #define _TRY_CATCH_SIZE_FROM_ARGS(NAME, IND, CATCH) \
   cv::Size NAME; \
   try { \
-    NAME = Size::RawSize(1, &info[IND]); \
+    Local<Value> val = info[IND]; \
+    NAME = Size::RawSize(1, &val); \
   } catch (const char *) { \
     CATCH \
   }
@@ -37,8 +38,8 @@ public:
 
   static cv::Size RawSize(int const &argc, Local<Value>* const argv);
 
-  static NAN_GETTER(Size::Getter);
-  static NAN_SETTER(Size::Setter);
+  static NAN_GETTER(Getter);
+  static NAN_SETTER(Setter);
 
   static NAN_METHOD(Area);
 
