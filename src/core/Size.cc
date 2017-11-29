@@ -106,7 +106,7 @@ cv::Size Size::RawSize(int const &argc, Local<Value>* const argv) {
       Local<String> objKey_w = Nan::New<String>(OBJECT_KEY_WIDTH).ToLocalChecked();
       Local<String> objKey_h = Nan::New<String>(OBJECT_KEY_HEIGHT).ToLocalChecked();
 
-      if (!Nan::HasOwnProperty(sizeLike, objKey_w).ToChecked() || !Nan::HasOwnProperty(sizeLike, objKey_h).ToChecked()) {
+      if (!Nan::HasOwnProperty(sizeLike, objKey_w).FromJust() || !Nan::HasOwnProperty(sizeLike, objKey_h).FromJust()) {
         throw "SizeLike object must have properties \"width\" and \"height\"";
       }
 

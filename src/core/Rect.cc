@@ -138,7 +138,7 @@ cv::Rect Rect::RawRect(int const &argc, Local<Value>* const argv) {
       Local<String> objKey_w = Nan::New<String>(OBJECT_KEY_WIDTH).ToLocalChecked();
       Local<String> objKey_h = Nan::New<String>(OBJECT_KEY_HEIGHT).ToLocalChecked();
 
-      if (!Nan::HasOwnProperty(rectLike, objKey_x).ToChecked() || !Nan::HasOwnProperty(rectLike, objKey_y).ToChecked() || !Nan::HasOwnProperty(rectLike, objKey_w).ToChecked() || !Nan::HasOwnProperty(rectLike, objKey_h).ToChecked()) {
+      if (!Nan::HasOwnProperty(rectLike, objKey_x).FromJust() || !Nan::HasOwnProperty(rectLike, objKey_y).FromJust() || !Nan::HasOwnProperty(rectLike, objKey_w).FromJust() || !Nan::HasOwnProperty(rectLike, objKey_h).FromJust()) {
         throw "RectLike object must have properties \"x\", \"y\", \"width\" and \"height\"";
       }
 

@@ -108,7 +108,7 @@ cv::Range Range::RawRange(int const &argc, Local<Value>* const argv) {
       Local<String> objKey_s = Nan::New<String>(OBJECT_KEY_START).ToLocalChecked();
       Local<String> objKey_e = Nan::New<String>(OBJECT_KEY_END).ToLocalChecked();
 
-      if (!Nan::HasOwnProperty(rangeLike, objKey_s).ToChecked() || !Nan::HasOwnProperty(rangeLike, objKey_e).ToChecked()) {
+      if (!Nan::HasOwnProperty(rangeLike, objKey_s).FromJust() || !Nan::HasOwnProperty(rangeLike, objKey_e).FromJust()) {
         throw "RangeLike object must have properties \"start\" and \"end\"";
       }
 

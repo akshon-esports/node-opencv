@@ -104,7 +104,7 @@ cv::Point Point::RawPoint(int const &argc, Local<Value>* const argv) {
       Local<String> objKey_x = Nan::New<String>(OBJECT_KEY_X).ToLocalChecked();
       Local<String> objKey_y = Nan::New<String>(OBJECT_KEY_Y).ToLocalChecked();
 
-      if (!Nan::HasRealNamedProperty(pointLike, objKey_x).ToChecked() || !Nan::HasRealNamedProperty(pointLike, objKey_y).ToChecked()) {
+      if (!Nan::HasRealNamedProperty(pointLike, objKey_x).FromJust() || !Nan::HasRealNamedProperty(pointLike, objKey_y).FromJust()) {
         throw "PointLike object must have properties \"x\" and \"y\"";
       }
 
