@@ -392,7 +392,7 @@ NAN_METHOD(UnifiedMatrix::Create) {
       Local<Value> val = info[0];
       cv::Size size = Size::RawSize(1, &val);
       ASSERT_INT_FROM_ARGS(type, 1);
-      TRY_CATCH_THROW_OPENCV(self->mat.create(size, info[1]->NumberValue()));
+      TRY_CATCH_THROW_OPENCV(self->mat.create(size, type));
     } catch (char const*) {}
   } else if (info.Length() == 3 && info[0]->IsNumber() && info[1]->IsNumber() && info[2]->IsNumber()) {
     TRY_CATCH_THROW_OPENCV(self->mat.create(info[0]->NumberValue(), info[1]->NumberValue(), info[2]->NumberValue()));

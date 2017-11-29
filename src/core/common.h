@@ -9,6 +9,7 @@
 
 char const* const ERROR_MUST_USE_NEW = "Cannot instantiate without new";
 char const* const ERROR_INVALID_ARGUMENTS = "Invalid arguments";
+char const* const ERROR_NOT_IMPLEMENTED = "Not implemented";
 
 char const* const OBJECT_KEY_X = "x";
 char const* const OBJECT_KEY_Y = "y";
@@ -17,7 +18,7 @@ char const* const OBJECT_KEY_HEIGHT = "height";
 char const* const OBJECT_KEY_START = "start";
 char const* const OBJECT_KEY_END = "end";
 
-NCV_CORE_EXTERN inline NAN_METHOD(NotImplemented);
+#define NotImplemented(INFO) Nan::ThrowError(ERROR_NOT_IMPLEMENTED);
 
 NCV_CORE_EXTERN cv::_InputArray ReadInputArray(Local<Value> value);
 NCV_CORE_EXTERN cv::_InputOutputArray ReadInputOutputArray(Local<Value> value);
@@ -64,5 +65,16 @@ NCV_CORE_EXTERN cv::_OutputArray ReadOutputArray(Local<Value> value);
 
 #define DEFAULT_OUTPUTARRAY_FROM_ARGS(NAME, IND, DEF) \
   _TRY_CATCH_OUTPUTARRAY_FROM_ARGS(NAME, IND, NAME = DEF)
+
+class NCV_CORE_EXTERN HybridAsyncWorker : public Nan::AsyncWorker {
+public:
+  HybridAsyncWorker() : AsyncWorker{ nullptr } {}
+  virtual Local<Value> GetResult();
+  bool HasError() const;
+  Local<Value> Error() const;
+protected:
+  void HandleOKCallback() override final;
+  void HandleErrorCallback() override final;
+};
 
 #endif // __CORE__COMMON_H__

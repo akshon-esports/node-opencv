@@ -156,12 +156,10 @@ namespace ncv {
     }
 
     NAN_METHOD(SetMouseCallback) {
-      FUNCTION_REQUIRE_ARGUMENTS_RANGE(2, 4);
+      FUNCTION_REQUIRE_ARGUMENTS(2);
       Nan::HandleScope scope;
-      ASSERT_STRING_FROM_ARGS(trackbarname, 0);
-      ASSERT_STRING_FROM_ARGS(winname, 1);
-      ASSERT_INT_FROM_ARGS(count, 2);
-      FUNCTION_FROM_ARGS(fn, 3);
+      ASSERT_STRING_FROM_ARGS(winname, 0);
+      FUNCTION_FROM_ARGS(fn, 1);
 
       Nan::Persistent<Function> onMouse;
       MouseAction action = [&onMouse](int event, int x, int y, int flags) {
