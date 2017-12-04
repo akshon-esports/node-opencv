@@ -5,19 +5,19 @@ namespace ncv {
   namespace imgproc {
 
     NAN_METHOD(CalcBackProject) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(CalcHist) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(CompareHist) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(EMD) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(EqualizeHist) {
@@ -28,7 +28,7 @@ namespace ncv {
     }
 
     NAN_METHOD(WrapperEMD) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     void HistInit(Local<Object> &target) {

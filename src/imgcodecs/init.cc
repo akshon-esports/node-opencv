@@ -1,71 +1,8 @@
 #include "common.h"
 
-#include "../core/Matrix.h"
-
 namespace ncv {
   
   namespace imgcodecs {
-    
-    class HybridAsyncWorker : public Nan::AsyncWorker {
-    public:
-      HybridAsyncWorker() : AsyncWorker{ nullptr } {}
-
-      virtual Local<Value> GetResult() {
-        Nan::EscapableHandleScope scope;
-        return scope.Escape(Nan::Undefined());
-      };
-
-      bool HasError() const {
-        return ErrorMessage() != NULL;
-      }
-
-      Local<Value> Error() const {
-        Nan::EscapableHandleScope scope;
-
-        return scope.Escape(Nan::Error(ErrorMessage()));
-      }
-
-    protected:
-      void HandleOKCallback() override final {
-        Nan::HandleScope scope;
-
-        Local<Value> result = GetResult();
-
-        Local<Value> callback_or_resolver = GetFromPersistent(0u);
-        if (callback_or_resolver->IsFunction()) {
-          Local<Value> argv[2] = { Nan::Undefined(), result };
-
-          Nan::TryCatch try_catch;
-          Local<Function>::Cast(callback_or_resolver)->Call(Nan::GetCurrentContext()->Global(), 2, argv);
-          if (try_catch.HasCaught()) {
-            Nan::FatalException(try_catch);
-          }
-        } else {
-          Local<Promise::Resolver>::Cast(callback_or_resolver)->Resolve(Nan::GetCurrentContext(), result);
-          Isolate::GetCurrent()->RunMicrotasks();
-        }
-      }
-
-      void HandleErrorCallback() override final {
-        Nan::HandleScope scope;
-
-        Local<Value> error = Error();
-
-        Local<Value> callback_or_resolver = GetFromPersistent(0u);
-        if (callback_or_resolver->IsFunction()) {
-          Local<Value> argv[1]{ error };
-
-          Nan::TryCatch try_catch;
-          Nan::CallAsFunction(callback_or_resolver->ToObject(), Nan::GetCurrentContext()->Global(), 1, argv);
-          if (try_catch.HasCaught()) {
-            Nan::FatalException(try_catch);
-          }
-        } else {
-          Local<Promise::Resolver>::Cast(callback_or_resolver)->Reject(error);
-          Isolate::GetCurrent()->RunMicrotasks();
-        }
-      }
-    };
 
     class BaseImageReadingAsyncWorker : public HybridAsyncWorker {
     public:
@@ -416,6 +353,14 @@ namespace ncv {
 #endif
     }
 
+    NAN_METHOD(ImageEncode) {
+      NotImplemented
+    }
+
+    NAN_METHOD(ImageEncodeSync) {
+      NotImplemented
+    }
+
     extern "C" void init(Local<Object> target) {
       Nan::HandleScope scope;
 
@@ -467,8 +412,8 @@ namespace ncv {
       Nan::SetMethod(target, "imreadSync", ImageReadSync);
       Nan::SetMethod(target, "imdecode", ImageDecode);
       Nan::SetMethod(target, "imdecodeSync", ImageDecodeSync);
-      Nan::SetMethod(target, "imencode", NotImplemented);
-      Nan::SetMethod(target, "imencodeSync", NotImplemented);
+      Nan::SetMethod(target, "imencode", ImageEncode);
+      Nan::SetMethod(target, "imencodeSync", ImageEncodeSync);
       Nan::SetMethod(target, "imreadmulti", ImageReadMulti);
       Nan::SetMethod(target, "imreadmultiSync", ImageReadMultiSync);
       Nan::SetMethod(target, "imwrite", ImageWrite);

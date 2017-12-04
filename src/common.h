@@ -2,13 +2,13 @@
 #define __COMMON_H__
 
 #ifdef _WIN32
-# ifndef BUILDING_NCV_CORE_BINDINGS
-#   define NCV_CORE_EXTERN __declspec(dllimport)
+# ifndef BUILDING_NCV_COMMON_BINDINGS
+#   define NCV_COMMON_EXTERN __declspec(dllimport)
 # else
-#   define NCV_CORE_EXTERN __declspec(dllexport)
+#  define NCV_COMMON_EXTERN __declspec(dllexport)
 # endif
 #else
-# define NCV_CORE_EXTERN /* nothing */
+# define NCV_COMMON_EXTERN /* nothing */
 #endif
 
 #include <v8.h>
@@ -51,7 +51,7 @@ using namespace node;
 
 #define NEW_INSTANCE_DEF \
   static inline Local<Object> NewInstance() { \
-    Nan::EscapableHandleScope scope;\
+    Nan::EscapableHandleScope scope; \
     return scope.Escape(Nan::NewInstance(Nan::GetFunction(Nan::New(constructor)).ToLocalChecked()).ToLocalChecked()); \
   };
 
@@ -166,5 +166,13 @@ using namespace node;
 #define GENERIC_NAMED_PROPERTY_QUERY(name) void name(Local<Name> property, const PropertyCallbackInfo<Integer> &info)
 #define GENERIC_NAMED_PROPERTY_DELETER(name) void name(Local<Name> property, Local<Value> value, const PropertyCallbackInfo<Value> &info)
 #define GENERIC_NAMED_PROPERTY_ENUMERATOR(name) void name(const PropertyCallbackInfo<Array> &info)
+
+#include "common/Range.h"
+#include "common/Point.h"
+#include "common/Rect.h"
+#include "common/Scalar.h"
+#include "common/Size.h"
+#include "common/Matrix.h"
+#include "common/UnifiedMatrix.h"
 
 #endif // __COMMON_H__

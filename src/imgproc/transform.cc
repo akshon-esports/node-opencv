@@ -1,56 +1,55 @@
 #include "transform.h"
-#include "../core/Size.h"
 
 namespace ncv {
 
   namespace imgproc {
 
     NAN_METHOD(ConvertMaps) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(GetAffineTransform) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(GetDefaultNewCameraMatrix) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(GetPerspectiveTransform) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(GetRectSubPix) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(GetRotationMatrix2D) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(InitUndistortRectifyMap) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(InitWideAngleProjMap) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(InvertAffineTransform) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(LinearPolar) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(LogPolar) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Remap) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Resize) {
@@ -64,19 +63,19 @@ namespace ncv {
     }
 
     NAN_METHOD(Undistort) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(UndistortPoints) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(WarpAffine) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(WarpPerspective) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     void TransformInit(Local<Object> &target) {

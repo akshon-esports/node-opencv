@@ -1,5 +1,5 @@
 #include "shape.h"
-#include "../core/Point.h"
+
 #include "Contours.h"
 
 namespace ncv {
@@ -68,39 +68,39 @@ namespace ncv {
     }
 
     NAN_METHOD(ApproxPolyDP) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(ArcLength) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(BoundingRect) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(BoxPoints) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(ConnectedComponents) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(ConnectedComponentsWithStats) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(ContourArea) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(ConvexHull) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(ConvexityDefects) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(FindContours) {
@@ -119,23 +119,23 @@ namespace ncv {
     }
 
     NAN_METHOD(FitEllipse) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(FitLine) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(HuMoments) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(IntersectConvexConvex) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(IsContourConvex) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(MatchShapes) {
@@ -148,27 +148,27 @@ namespace ncv {
     }
 
     NAN_METHOD(MinAreaRect) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(MinEnclosingCircle) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(MinEnclosingTriangle) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Moments) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(PointPolygonTest) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(RotatedRectangleIntersection) {
-      NotImplemented(info);
+      NotImplemented
     }
 
   }

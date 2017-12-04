@@ -1,8 +1,5 @@
 #include "Contour.h"
 
-#include "../core/Rect.h"
-#include "../core/Point.h"
-
 #include <iostream>
 
 Nan::Persistent<FunctionTemplate> Contour::constructor;
@@ -167,7 +164,7 @@ NAN_METHOD(Contour::Previous) {
 }
 
 NAN_METHOD(Contour::Moments) {
-  NotImplemented(info);
+  NotImplemented
 }
 
 NAN_METHOD(Contour::Area) {
@@ -259,7 +256,7 @@ NAN_METHOD(Contour::BoundingRect) {
 }
 
 NAN_METHOD(Contour::MinAreaRect) {
-  NotImplemented(info);
+  NotImplemented
 //  Nan::HandleScope scope;
 //
 //  Contour *self = UNWRAP_OBJECT(Contour, info.This());
@@ -295,7 +292,7 @@ NAN_METHOD(Contour::MinEnclosingCircle) {
 }
 
 NAN_METHOD(Contour::FitEllipse) {
-  NotImplemented(info);
+  NotImplemented
 //  Nan::HandleScope scope;
 //
 //  Contour *self = UNWRAP_OBJECT(Contour, info.This());

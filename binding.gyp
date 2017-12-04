@@ -109,18 +109,19 @@
 #      ]
 #    }
     {
-      "target_name": "core",
+      "target_name": "common",
+
+      "type": "shared_library",
 
       "sources": [
-        "src/core/Matrix.cc",
-        "src/core/UnifiedMatrix.cc",
-        "src/core/Point.cc",
-        "src/core/Range.cc",
-        "src/core/Rect.cc",
-        "src/core/Scalar.cc",
-        "src/core/Size.cc",
-        "src/core/array.cc",
-        "src/core/init.cc",
+        "src/common/common.cc",
+        "src/common/Matrix.cc",
+        "src/common/UnifiedMatrix.cc",
+        "src/common/Point.cc",
+        "src/common/Range.cc",
+        "src/common/Rect.cc",
+        "src/common/Scalar.cc",
+        "src/common/Size.cc",
       ],
 
       "libraries": [
@@ -179,9 +180,82 @@
       }
     },
     {
+      "target_name": "core",
+
+      "dependencies": [ "common" ],
+
+      "sources": [
+        "src/core/array.cc",
+        "src/core/init.cc",
+      ],
+
+      "libraries": [
+        "<!@(node utils/find-opencv.js --libs)"
+      ],
+
+      "include_dirs": [
+        "<!@(node utils/find-opencv.js --cflags)",
+        "<!(node -e \"require('nan')\")"
+      ],
+
+      "cflags!" : [ "-fno-exceptions"],
+      "cflags_cc!": [ "-fno-rtti",  "-fno-exceptions"],
+
+      "conditions": [
+        [ "OS!=\"win\"", {
+          "libraries": [
+            "<(module_root_dir)/build/Release/common.so"
+          ],
+        }],
+        [ "OS==\"linux\" or OS==\"freebsd\" or OS==\"openbsd\" or OS==\"solaris\" or OS==\"aix\"", {
+          "cflags": [
+            "<!@(node utils/find-opencv.js --cflags)",
+            "-Wall"
+          ]
+        }],
+        [ "OS==\"win\"", {
+          "cflags": [
+            "-Wall"
+          ],
+          "defines": [
+              "WIN"
+          ],
+          "libraries": [
+            "<(module_root_dir)/build/Release/common.lib"
+          ],
+          "msvs_settings": {
+            "VCCLCompilerTool": {
+              "ExceptionHandling": "2",
+              "DisableSpecificWarnings": [ "4530", "4506", "4244" ],
+            },
+          }
+        }],
+        # cflags on OS X are stupid and have to be defined like this
+        [ "OS==\"mac\"", {
+          "xcode_settings": {
+            "OTHER_CFLAGS": [
+              "-mmacosx-version-min=10.7",
+              "-std=c++11",
+              "-stdlib=libc++",
+              "<!@(node utils/find-opencv.js --cflags)",
+            ],
+            "GCC_ENABLE_CPP_RTTI": "YES",
+            "GCC_ENABLE_CPP_EXCEPTIONS": "YES"
+          }
+        }]
+      ],
+      "configurations": {
+        "Debug": {
+          "defines": [
+            "NODE_OPENCV_DEBUG=1"
+          ],
+        }
+      }
+    },
+    {
       "target_name": "imgcodecs",
 
-      "dependencies": [ "core" ],
+      "dependencies": [ "common" ],
 
       "sources": [
         "src/imgcodecs/init.cc",
@@ -210,7 +284,7 @@
       "conditions": [
         [ "OS!=\"win\"", {
           "libraries": [
-            "<(module_root_dir)/build/Release/core.a"
+            "<(module_root_dir)/build/Release/common.so"
           ],
         }],
         [ "OS==\"linux\" or OS==\"freebsd\" or OS==\"openbsd\" or OS==\"solaris\" or OS==\"aix\"", {
@@ -227,7 +301,7 @@
               "WIN"
           ],
           "libraries": [
-            "<(module_root_dir)/build/Release/core.lib"
+            "<(module_root_dir)/build/Release/common.lib"
           ],
           "msvs_settings": {
             "VCCLCompilerTool": {
@@ -254,7 +328,7 @@
     {
       "target_name": "imgproc",
 
-      "dependencies": [ "core" ],
+      "dependencies": [ "common" ],
 
       "sources": [
         "src/imgproc/Contour.cc",
@@ -299,7 +373,7 @@
       "conditions": [
         [ "OS!=\"win\"", {
           "libraries": [
-            "<(module_root_dir)/build/Release/core.a"
+            "<(module_root_dir)/build/Release/common.so"
           ],
         }],
         [ "OS==\"linux\" or OS==\"freebsd\" or OS==\"openbsd\" or OS==\"solaris\" or OS==\"aix\"", {
@@ -316,7 +390,7 @@
               "WIN"
           ],
           "libraries": [
-            "<(module_root_dir)/build/Release/core.lib"
+            "<(module_root_dir)/build/Release/common.lib"
           ],
           "msvs_settings": {
             "VCCLCompilerTool": {
@@ -343,7 +417,7 @@
     {
       "target_name": "videoio",
 
-      "dependencies": [ "core" ],
+      "dependencies": [ "common" ],
 
       "sources": [
         "src/videoio/VideoCapture.cc",
@@ -375,7 +449,7 @@
       "conditions": [
         [ "OS!=\"win\"", {
           "libraries": [
-            "<(module_root_dir)/build/Release/core.a"
+            "<(module_root_dir)/build/Release/common.so"
           ],
         }],
         [ "OS==\"linux\" or OS==\"freebsd\" or OS==\"openbsd\" or OS==\"solaris\" or OS==\"aix\"", {
@@ -392,7 +466,7 @@
               "WIN"
           ],
           "libraries": [
-            "<(module_root_dir)/build/Release/core.lib"
+            "<(module_root_dir)/build/Release/common.lib"
           ],
           "msvs_settings": {
             "VCCLCompilerTool": {
@@ -419,7 +493,7 @@
     {
       "target_name": "highgui",
 
-      "dependencies": [ "core" ],
+      "dependencies": [ "common" ],
 
       "sources": [
         "src/highgui/init.cc",
@@ -448,7 +522,7 @@
       "conditions": [
         [ "OS!=\"win\"", {
           "libraries": [
-            "<(module_root_dir)/build/Release/core.a"
+            "<(module_root_dir)/build/Release/common.so"
           ],
         }],
         [ "OS==\"linux\" or OS==\"freebsd\" or OS==\"openbsd\" or OS==\"solaris\" or OS==\"aix\"", {
@@ -465,7 +539,7 @@
               "WIN"
           ],
           "libraries": [
-            "<(module_root_dir)/build/Release/core.lib"
+            "<(module_root_dir)/build/Release/common.lib"
           ],
           "msvs_settings": {
             "VCCLCompilerTool": {
@@ -492,7 +566,7 @@
     {
       "target_name": "text",
 
-      "dependencies": [ "core" ],
+      "dependencies": [ "common" ],
 
       "sources": [
         "src/text/OCRTesseract.cc",
@@ -522,7 +596,7 @@
       "conditions": [
         [ "OS!=\"win\"", {
           "libraries": [
-            "<(module_root_dir)/build/Release/core.a"
+            "<(module_root_dir)/build/Release/common.so"
           ],
         }],
         [ "OS==\"linux\" or OS==\"freebsd\" or OS==\"openbsd\" or OS==\"solaris\" or OS==\"aix\"", {
@@ -539,7 +613,7 @@
               "WIN"
           ],
           "libraries": [
-            "<(module_root_dir)/build/Release/core.lib"
+            "<(module_root_dir)/build/Release/common.lib"
           ],
           "msvs_settings": {
             "VCCLCompilerTool": {

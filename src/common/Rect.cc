@@ -1,8 +1,5 @@
 #include "Rect.h"
 
-#include "Point.h"
-#include "Size.h"
-
 Nan::Persistent<FunctionTemplate> Rect::constructor;
 
 void Rect::Init(Local<Object> target) {

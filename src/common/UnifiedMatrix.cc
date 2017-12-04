@@ -1,9 +1,4 @@
 #include "UnifiedMatrix.h"
-#include "Range.h"
-#include "Size.h"
-#include "Rect.h"
-#include "Scalar.h"
-#include "Matrix.h"
 
 Nan::Persistent<FunctionTemplate> UnifiedMatrix::constructor;
 
@@ -359,15 +354,15 @@ NAN_METHOD(UnifiedMatrix::Reshape) {
 }
 
 NAN_METHOD(UnifiedMatrix::Transpose) {
-  NotImplemented(info);
+  NotImplemented
 }
 
 NAN_METHOD(UnifiedMatrix::Invert) {
-  NotImplemented(info);
+  NotImplemented
 }
 
 NAN_METHOD(UnifiedMatrix::Multiply) {
-  NotImplemented(info);
+  NotImplemented
 }
 
 NAN_METHOD(UnifiedMatrix::Dot) {
@@ -408,7 +403,7 @@ NAN_METHOD(UnifiedMatrix::Release) {
 }
 
 NAN_METHOD(UnifiedMatrix::LocateROI) {
-  NotImplemented(info);
+  NotImplemented
 }
 
 NAN_METHOD(UnifiedMatrix::AdjustROI) {
@@ -461,7 +456,7 @@ NAN_METHOD(UnifiedMatrix::ElemSize) {
 }
 
 NAN_METHOD(UnifiedMatrix::ElemSize1) {
-  NotImplemented(info);
+  NotImplemented
 }
 
 NAN_METHOD(UnifiedMatrix::Type) {
@@ -483,7 +478,7 @@ NAN_METHOD(UnifiedMatrix::Channels) {
 }
 
 NAN_METHOD(UnifiedMatrix::Step1) {
-  NotImplemented(info);
+  NotImplemented
 }
 
 NAN_METHOD(UnifiedMatrix::Empty) {

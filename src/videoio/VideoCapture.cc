@@ -1,7 +1,5 @@
 #include "VideoCapture.h"
 
-#include "../core/Matrix.h"
-
 Nan::Persistent<FunctionTemplate> VideoCapture::constructor;
 
 void VideoCapture::Init(Local<Object> target) {

@@ -1,6 +1,4 @@
 #include "OCRTesseract.h"
-#include "../core/Matrix.h"
-#include "../core/Rect.h"
 
 Nan::Persistent<FunctionTemplate> OCRTesseract::constructor;
 

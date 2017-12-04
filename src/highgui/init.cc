@@ -1,6 +1,4 @@
 #include "common.h"
-#include "../core/Matrix.h"
-#include "../core/Rect.h"
 
 namespace ncv {
 
@@ -231,7 +229,7 @@ namespace ncv {
     }
 
     NAN_METHOD(StartWindowThread) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(WaitKey) {

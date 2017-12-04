@@ -49,15 +49,15 @@ namespace ncv {
     }
 
     NAN_METHOD(FloodFill) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(GrabCut) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Integral) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Threshold) {

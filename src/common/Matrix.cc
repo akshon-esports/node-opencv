@@ -1,11 +1,5 @@
 #include "Matrix.h"
 
-#include "Scalar.h"
-#include "Size.h"
-#include "Rect.h"
-#include "Range.h"
-#include "UnifiedMatrix.h"
-
 Nan::Persistent<FunctionTemplate> Matrix::constructor;
 
 void Matrix::Init(Local<Object> target) {
@@ -380,15 +374,15 @@ NAN_METHOD(Matrix::Reshape) {
 }
 
 NAN_METHOD(Matrix::Transpose) {
-  NotImplemented(info);
+  NotImplemented
 }
 
 NAN_METHOD(Matrix::Invert) {
-  NotImplemented(info);
+  NotImplemented
 }
 
 NAN_METHOD(Matrix::Multiply) {
-  NotImplemented(info);
+  NotImplemented
 }
 
 NAN_METHOD(Matrix::Cross) {
@@ -445,11 +439,11 @@ NAN_METHOD(Matrix::Release) {
 }
 
 NAN_METHOD(Matrix::Reserve) {
-  NotImplemented(info);
+  NotImplemented
 }
 
 NAN_METHOD(Matrix::ReserveBuffer) {
-  NotImplemented(info);
+  NotImplemented
 }
 
 
@@ -466,15 +460,15 @@ NAN_METHOD(Matrix::Resize) {
 }
 
 NAN_METHOD(Matrix::PushBack) {
-  NotImplemented(info);
+  NotImplemented
 }
 
 NAN_METHOD(Matrix::PopBack) {
-  NotImplemented(info);
+  NotImplemented
 }
 
 NAN_METHOD(Matrix::LocateROI) {
-  NotImplemented(info);
+  NotImplemented
 }
 
 NAN_METHOD(Matrix::AdjustROI) {
@@ -527,7 +521,7 @@ NAN_METHOD(Matrix::ElemSize) {
 }
 
 NAN_METHOD(Matrix::ElemSize1) {
-  NotImplemented(info);
+  NotImplemented
 }
 
 NAN_METHOD(Matrix::Type) {
@@ -549,7 +543,7 @@ NAN_METHOD(Matrix::Channels) {
 }
 
 NAN_METHOD(Matrix::Step1) {
-  NotImplemented(info);
+  NotImplemented
 }
 
 NAN_METHOD(Matrix::Empty) {

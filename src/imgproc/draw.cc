@@ -1,9 +1,5 @@
 #include "draw.h"
-#include "../core/Point.h"
-#include "../core/Rect.h"
-#include "../core/Scalar.h"
-#include "../core/Size.h"
-#include "../core/Matrix.h"
+
 #include "Contours.h"
 
 namespace ncv {
@@ -106,7 +102,7 @@ namespace ncv {
     }
 
     NAN_METHOD(Ellipse) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Ellipse2Poly) {

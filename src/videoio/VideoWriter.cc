@@ -24,25 +24,25 @@ void VideoWriter::Init(Local<Object> target) {
 };
 
 NAN_METHOD(VideoWriter::New) {
-  NotImplemented(info);
+  NotImplemented
 }
 
 NAN_METHOD(VideoWriter::Get) {
-  NotImplemented(info);
+  NotImplemented
 }
 
 NAN_METHOD(VideoWriter::IsOpened) {
-  NotImplemented(info);
+  NotImplemented
 }
 
 NAN_METHOD(VideoWriter::Release) {
-  NotImplemented(info);
+  NotImplemented
 }
 
 NAN_METHOD(VideoWriter::Set) {
-  NotImplemented(info);
+  NotImplemented
 }
 
 NAN_METHOD(VideoWriter::Write) {
-  NotImplemented(info);
+  NotImplemented
 }

@@ -5,8 +5,10 @@
   "author": "Peter Braden <peterbraden@peterbraden.co.uk>",
   "dependencies": {
     "buffers": "^0.1.1",
+    "gyp": "^0.5.0",
     "istanbul": "0.4.5",
     "nan": "^2.7.0",
+    "node-gyp": "^3.6.2",
     "node-pre-gyp": "^0.6.30"
   },
   "devDependencies": {

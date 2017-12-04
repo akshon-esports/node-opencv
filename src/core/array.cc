@@ -1,18 +1,15 @@
 #include "array.h"
-#include "Point.h"
-#include "Scalar.h"
-#include "Matrix.h"
 
 namespace ncv {
 
   namespace core {
 
     NAN_METHOD(Absdiff) {
-      NotImplemented(info);
+      NotImplemented;
     }
 
     NAN_METHOD(Add) {
-      NotImplemented(info);
+      NotImplemented;
     }
 
     NAN_METHOD(AddWeighted) {
@@ -29,10 +26,40 @@ namespace ncv {
     }
 
     NAN_METHOD(BatchDistance) {
-      NotImplemented(info);
+      NotImplemented;
     }
 
+    class BitwiseAndHybridAsyncWorker : public HybridAsyncWorker {
+    public:
+      BitwiseAndHybridAsyncWorker(cv::_InputArray src1, cv::_InputArray src2, cv::_OutputArray dst, cv::_InputArray mask) : HybridAsyncWorker() {
+        
+      }
+
+      void Execute() override {
+        try {
+          cv::bitwise_and(src1, src2, dst, mask);
+        } catch (cv::Exception& e) {
+          return SetErrorMessage(e.what());
+        }
+      }
+    private:
+      cv::_InputArray src1;
+      cv::_InputArray src2;
+      cv::_OutputArray dst;
+      cv::_InputArray mask;
+    };
+
     NAN_METHOD(BitwiseAnd) {
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(3, 4);
+      Nan::HandleScope scope;
+      ASSERT_INPUTARRAY_FROM_ARGS(src1, 0);
+      ASSERT_INPUTARRAY_FROM_ARGS(src2, 1);
+      ASSERT_OUTPUTARRAY_FROM_ARGS(dst, 2);
+      DEFAULT_INPUTARRAY_FROM_ARGS(mask, 3, cv::noArray());
+      TRY_CATCH_THROW_OPENCV(cv::bitwise_and(src1, src2, dst, mask));
+    }
+
+    NAN_METHOD(BitwiseAnd_Sync) {
       FUNCTION_REQUIRE_ARGUMENTS_RANGE(3, 4);
       Nan::HandleScope scope;
       ASSERT_INPUTARRAY_FROM_ARGS(src1, 0);
@@ -72,35 +99,35 @@ namespace ncv {
     }
 
     NAN_METHOD(BorderInterpolate) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(CalcCovarMatrix) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(CartToPolar) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(CheckRange) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Compare) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(CompleteSymm) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(ConvertFp16) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(ConvertScaleAbs) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(CopyMakeBorder) {
@@ -117,39 +144,39 @@ namespace ncv {
     }
 
     NAN_METHOD(CountNonZero) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Dct) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Determinant) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Dft) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Divide) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Eigen) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Exp) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(ExtractChannel) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(FindNonZero) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Flip) {
@@ -161,11 +188,11 @@ namespace ncv {
     }
 
     NAN_METHOD(Gemm) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(GetOptimalDFTSize) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Hconcat) {
@@ -193,11 +220,11 @@ namespace ncv {
     }
 
     NAN_METHOD(Idct) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Idft) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(InRange) {
@@ -211,31 +238,31 @@ namespace ncv {
     }
 
     NAN_METHOD(InsertChannel) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Invert) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Log) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(LUT) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Magnitude) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Mahalanobis) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Max) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Mean) {
@@ -248,19 +275,19 @@ namespace ncv {
     }
 
     NAN_METHOD(MeanStdDev) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Merge) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Min) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(MinMaxIdx) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(MinMaxLoc) {
@@ -283,55 +310,55 @@ namespace ncv {
     }
 
     NAN_METHOD(MixChannels) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(MulSpectrums) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Multiply) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(MulTransposed) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Norm) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Normalize) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(PatchNaNs) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(PCABackProject) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(PCACompute) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(PCAProject) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(PerspectiveTransform) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Phase) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(PolarToCart) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Pow) {
@@ -343,63 +370,63 @@ namespace ncv {
     }
 
     NAN_METHOD(PSNR) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Randn) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(RandShuffle) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Randu) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Reduce) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Repeat) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Rotate) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(ScaleAdd) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(SetIdentity) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(SetRNGSeed) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Solve) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(SolveCubic) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(SolvePoly) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Sort) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(SortIdx) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Split) {
@@ -440,27 +467,27 @@ namespace ncv {
     }
 
     NAN_METHOD(SVBackSubst) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(SVDecomp) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(TheRNG) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Trace) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Transform) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Transpose) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Vconcat) {
@@ -551,6 +578,7 @@ namespace ncv {
       Nan::SetMethod(target, "addWeighted", AddWeighted);
       Nan::SetMethod(target, "batchDistance", BatchDistance);
       Nan::SetMethod(target, "bitwiseAnd", BitwiseAnd);
+      Nan::SetMethod(target, "bitwiseAndAsync", BitwiseAnd_Sync);
       Nan::SetMethod(target, "bitwiseNot", BitwiseNot);
       Nan::SetMethod(target, "bitwiseOr", BitwiseOr);
       Nan::SetMethod(target, "bitwiseXor", BitwiseXor);

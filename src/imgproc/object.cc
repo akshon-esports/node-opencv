@@ -1,5 +1,4 @@
 #include "object.h"
-#include "../core/Matrix.h"
 
 namespace ncv {
 

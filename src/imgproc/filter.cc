@@ -1,8 +1,4 @@
 #include "filter.h"
-#include "../core/Size.h"
-#include "../core/Point.h"
-#include "../core/Scalar.h"
-#include "../core/Matrix.h"
 
 namespace ncv {
 
@@ -85,7 +81,7 @@ namespace ncv {
     }
 
     NAN_METHOD(BuildPyramid) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Dilate) {
@@ -169,11 +165,11 @@ namespace ncv {
     }
 
     NAN_METHOD(GetStructuringElement) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Laplacian) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(MedianBlur) {
@@ -185,43 +181,43 @@ namespace ncv {
     }
 
     NAN_METHOD(MorphologyDefaultBorderValue) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(MorphologyEx) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(PyrDown) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(PyrMeanShiftFiltering) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(PyrUp) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Scharr) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(SepFilter2D) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(Sobel) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(SpatialGradient) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(SqrBoxFilter) {
-      NotImplemented(info);
+      NotImplemented
     }
 
   }

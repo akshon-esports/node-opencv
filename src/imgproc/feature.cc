@@ -1,7 +1,5 @@
 #include "feature.h"
 
-#include "../core/Point.h"
-
 namespace ncv {
 
   namespace imgproc {
@@ -64,27 +62,27 @@ namespace ncv {
     }
 
     NAN_METHOD(CornerEigenValsAndVecs) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(CornerHarris) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(CornerMinEigenVal) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(CornerSubPix) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(CreateLineSegmentDetector) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(GoodFeaturesToTrack) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(HoughCircles) {
@@ -117,7 +115,7 @@ namespace ncv {
     }
 
     NAN_METHOD(HoughLines) {
-      NotImplemented(info);
+      NotImplemented
     }
 
     NAN_METHOD(HoughLinesP) {
@@ -148,7 +146,7 @@ namespace ncv {
     }
 
     NAN_METHOD(PreCornerDetect) {
-      NotImplemented(info);
+      NotImplemented
     }
 
   }
