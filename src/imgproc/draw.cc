@@ -42,7 +42,7 @@ namespace ncv {
       DEFAULT_INT_FROM_ARGS(lineType, 5, cv::LINE_8);
       DEFAULT_INT_FROM_ARGS(shift, 6, 0);
       DEFAULT_DOUBLE_FROM_ARGS(tipLength, 6, 0);
-      TRY_CATCH_THROW_OPENCV(cv::arrowedLine(img, pt1, pt2, color, thickness, lineType, tipLength));
+      TRY_CATCH_THROW_OPENCV(cv::arrowedLine(img, pt1, pt2, color, thickness, lineType, shift, tipLength));
     }
 
     NAN_METHOD(Circle) {

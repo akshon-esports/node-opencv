@@ -199,7 +199,7 @@ namespace ncv {
       std::vector<int> params;
       if (info.Length() > 2 && info[2]->IsArray()) {
         Local<Array> numbers = Local<Array>::Cast(info[2]);
-        for (int i = 0; i < numbers->Length(); ++i) {
+        for (unsigned i = 0; i < numbers->Length(); ++i) {
           Local<Value> val = Nan::Get(numbers, i).ToLocalChecked();
           if (!val->IsNumber()) {
             return Nan::ThrowError(ERROR_INVALID_ARGUMENTS);
@@ -240,7 +240,7 @@ namespace ncv {
       std::vector<int> params;
       if (info.Length() > 2 && info[2]->IsArray()) {
         Local<Array> numbers = Local<Array>::Cast(info[2]);
-        for (int i = 0; i < numbers->Length(); ++i) {
+        for (unsigned i = 0; i < numbers->Length(); ++i) {
           Local<Value> val = Nan::Get(numbers, i).ToLocalChecked();
           if (!val->IsNumber()) {
             return Nan::ThrowError(ERROR_INVALID_ARGUMENTS);

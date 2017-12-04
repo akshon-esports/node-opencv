@@ -129,7 +129,7 @@ namespace ncv {
       ASSERT_DOUBLE_FROM_ARGS(sigmaX, 3);
       DEFAULT_DOUBLE_FROM_ARGS(sigmaY, 4, 0);
       DEFAULT_INT_FROM_ARGS(borderType, 5, cv::BORDER_DEFAULT);
-      TRY_CATCH_THROW_OPENCV(cv::GaussianBlur(src, dst, ksize, sigmaX, sigmaX, borderType));
+      TRY_CATCH_THROW_OPENCV(cv::GaussianBlur(src, dst, ksize, sigmaX, sigmaY, borderType));
     }
 
     NAN_METHOD(GetDerivKernels) {

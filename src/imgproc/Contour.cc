@@ -101,7 +101,7 @@ NAN_INDEX_ENUMERATOR(Contour::IndexEnumerator) {
   Contour *self = UNWRAP_OBJECT(Contour, info.This());
 
   v8::Local<v8::Array> arr = Nan::New<v8::Array>();
-  for (int i = 0; i < self->contours[self->index].size(); i++) {
+  for (unsigned i = 0; i < self->contours[self->index].size(); i++) {
     Nan::Set(arr, i, Nan::New(std::to_string(i)).ToLocalChecked());
   }
   info.GetReturnValue().Set(arr);
