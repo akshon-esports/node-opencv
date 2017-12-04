@@ -1,4 +1,4 @@
-var core = require(require('../binary')() + '/core.node');
+var core = require('../binary')('core');
 
 core.Matrix.addWeighted = function() {
   var out = new core.Matrix();

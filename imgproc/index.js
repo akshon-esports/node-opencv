@@ -1,2 +1,2 @@
-var path = require('../binary')();
-module.exports = require(path + '/core.node') && require(path + '/imgproc.node');
+var binary = require('../binary');
+module.exports = binary('core') && binary('imgproc');

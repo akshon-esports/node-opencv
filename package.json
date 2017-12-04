@@ -1,6 +1,6 @@
 {
   "name": "opencv",
-  "version": "0.0.1",
+  "version": "3.3.0-1",
   "description": "Node Bindings to OpenCV",
   "author": "Peter Braden <peterbraden@peterbraden.co.uk>",
   "dependencies": {
@@ -44,9 +44,9 @@
   },
   "binary": {
     "module_name": "opencv",
-    "module_path": "./build/{module_name}/v{version}/{configuration}/{node_abi}-{platform}-{arch}/",
-    "remote_path": "./{module_name}/v{version}/{configuration}/",
+    "module_path": "./bin/v{version}/{configuration}/{node_abi}-{platform}-{arch}/",
+    "remote_path": "/binaries/node/modules/node-opencv/v{version}/{configuration}/",
     "package_name": "{node_abi}-{platform}-{arch}.tar.gz",
-    "host": ""
+    "host": "https://cdn.akshonesports.com"
   }
 }

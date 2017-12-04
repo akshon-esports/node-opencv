@@ -1,4 +1,5 @@
 build
+bin
 .lock-wscript
 .DS_Store
 node_modules
