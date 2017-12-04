@@ -1,5 +1,4 @@
-var binary = require('../binary');
-module.exports = binary('core') && binary('videoio');
+module.exports = require('../binary')('videoio');
 
 var util = require('util');
 var stream = require('stream');

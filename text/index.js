@@ -1,2 +1,1 @@
-var binary = require('../binary');
-module.exports = binary('core') && binary('text');
+module.exports = require('../binary')('text');
