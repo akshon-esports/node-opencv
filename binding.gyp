@@ -3,8 +3,6 @@
     {
       "target_name": "common",
 
-      "type": "shared_library",
-
       "sources": [
         "src/common/common.cc",
         "src/common/Matrix.cc",
@@ -29,6 +27,11 @@
       "cflags_cc!": [ "-fno-rtti",  "-fno-exceptions"],
 
       "conditions": [
+        [ "OS!=\"win\"", {
+
+          "type": "static_library",
+
+        }],
         [ "OS==\"linux\" or OS==\"freebsd\" or OS==\"openbsd\" or OS==\"solaris\" or OS==\"aix\"", {
           "cflags": [
             "<!@(node utils/find-opencv.js --cflags)",
@@ -36,6 +39,9 @@
           ]
         }],
         [ "OS==\"win\"", {
+
+          "type": "shared_library",
+
           "cflags": [
             "-Wall"
           ],
@@ -96,7 +102,7 @@
       "conditions": [
         [ "OS!=\"win\"", {
           "libraries": [
-            "<(module_root_dir)/build/Release/common.so"
+            "<(module_root_dir)/build/Release/common.a"
           ],
         }],
         [ "OS==\"linux\" or OS==\"freebsd\" or OS==\"openbsd\" or OS==\"solaris\" or OS==\"aix\"", {
@@ -176,7 +182,7 @@
       "conditions": [
         [ "OS!=\"win\"", {
           "libraries": [
-            "<(module_root_dir)/build/Release/common.so"
+            "<(module_root_dir)/build/Release/common.a"
           ],
         }],
         [ "OS==\"linux\" or OS==\"freebsd\" or OS==\"openbsd\" or OS==\"solaris\" or OS==\"aix\"", {
@@ -265,7 +271,7 @@
       "conditions": [
         [ "OS!=\"win\"", {
           "libraries": [
-            "<(module_root_dir)/build/Release/common.so"
+            "<(module_root_dir)/build/Release/common.a"
           ],
         }],
         [ "OS==\"linux\" or OS==\"freebsd\" or OS==\"openbsd\" or OS==\"solaris\" or OS==\"aix\"", {
@@ -341,7 +347,7 @@
       "conditions": [
         [ "OS!=\"win\"", {
           "libraries": [
-            "<(module_root_dir)/build/Release/common.so"
+            "<(module_root_dir)/build/Release/common.a"
           ],
         }],
         [ "OS==\"linux\" or OS==\"freebsd\" or OS==\"openbsd\" or OS==\"solaris\" or OS==\"aix\"", {
@@ -414,7 +420,7 @@
       "conditions": [
         [ "OS!=\"win\"", {
           "libraries": [
-            "<(module_root_dir)/build/Release/common.so"
+            "<(module_root_dir)/build/Release/common.a"
           ],
         }],
         [ "OS==\"linux\" or OS==\"freebsd\" or OS==\"openbsd\" or OS==\"solaris\" or OS==\"aix\"", {
@@ -488,7 +494,7 @@
       "conditions": [
         [ "OS!=\"win\"", {
           "libraries": [
-            "<(module_root_dir)/build/Release/common.so"
+            "<(module_root_dir)/build/Release/common.a"
           ],
         }],
         [ "OS==\"linux\" or OS==\"freebsd\" or OS==\"openbsd\" or OS==\"solaris\" or OS==\"aix\"", {
@@ -543,16 +549,6 @@
       ],
 
       "conditions": [
-        [ "OS!=\"win\"", {
-
-          "copies": [
-            {
-              "files": [ "<(PRODUCT_DIR)/common.so" ],
-              "destination": "<(module_path)"
-            }
-          ]
-
-        }],
         [ "OS==\"win\"", {
 
           "copies": [
