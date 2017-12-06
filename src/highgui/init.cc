@@ -1,4 +1,8 @@
-#include "common.h"
+#include "../common.h"
+
+#include "opencv2/highgui.hpp"
+#include "../common/Matrix.h"
+#include "../common/Rect.h"
 
 namespace ncv {
 

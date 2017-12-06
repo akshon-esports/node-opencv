@@ -3,7 +3,6 @@
 
 #include "../common.h"
 
-#include "opencv2/core.hpp"
 #include "opencv2/videoio.hpp"
 
 #include "../core/common.h"

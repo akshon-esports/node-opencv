@@ -3,7 +3,6 @@
 
 #include "../common.h"
 
-#include "opencv2/core.hpp"
 #include "opencv2/text.hpp"
 
 #include "../core/common.h"

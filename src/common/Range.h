@@ -35,11 +35,11 @@ namespace ncv {
 
       Range() : Nan::ObjectWrap() {};
 
-      NEW_INSTANCE_DEF;
+      NEW_INSTANCE_DECL;
       static Local<Object> NewInstance(cv::Range const &range);
       static Local<Object> NewInstance(int const &start, int const &end);
 
-      HAS_INSTANCE_DEF;
+      HAS_INSTANCE_DECL;
 
       static cv::Range RawRange(int const &argc, Local<Value>* const argv);
 

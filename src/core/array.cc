@@ -1,5 +1,13 @@
 #include "array.h"
 
+#include "../common/async.h"
+#include "../common/common.h"
+#include "../common/Matrix.h"
+#include "../common/Point.h"
+#include "../common/Scalar.h"
+
+using namespace ncv::common;
+
 namespace ncv {
 
   namespace core {

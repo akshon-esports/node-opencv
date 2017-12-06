@@ -1,8 +1,85 @@
 #include "Scalar.h"
 
+namespace ncv {
+  namespace common {
+    namespace scalar {
+      NAN_INDEX_GETTER(IndexGetter) {
+        SETUP_FUNCTION(Scalar);
+        if (index < 4) {
+          info.GetReturnValue().Set(Nan::New<Number>(self->scalar[index]));
+        }
+      }
+
+      NAN_INDEX_SETTER(IndexSetter) {
+        SETUP_FUNCTION(Scalar);
+        if (index < 4) {
+          if (!value->IsNumber()) {
+            return Nan::ThrowTypeError("value must be a number");
+          }
+
+          self->scalar[index] = value->NumberValue();
+          info.GetReturnValue().Set(info.This());
+        }
+      }
+
+      NAN_INDEX_QUERY(IndexQuery) {
+        if (index < 4) {
+          info.GetReturnValue().Set(Nan::New<Integer>(DontDelete));
+        }
+      }
+
+      NAN_INDEX_ENUMERATOR(IndexEnumerator) {
+        v8::Local<v8::Array> arr = Nan::New<v8::Array>();
+        for (int i = 0; i < 4; i++) {
+          Nan::Set(arr, i, Nan::New(std::to_string(i)).ToLocalChecked());
+        }
+        info.GetReturnValue().Set(arr);
+      }
+
+      NAN_METHOD(Mul) {
+        SETUP_FUNCTION(Scalar)
+
+          if (info.Length() == 0) {
+            return Nan::ThrowError("Scalar.mul requires at least 1 argument");
+          }
+
+        SETUP_ARGC_AND_ARGV;
+
+        cv::Scalar scalar;
+        try {
+          scalar = Scalar::RawScalar(argc, argv);
+        } catch (const char* msg) {
+          delete[] argv;
+          return Nan::ThrowTypeError(msg);
+        }
+        delete[] argv;
+
+        DEFAULT_DOUBLE_FROM_ARGS(scale, 1, 1);
+
+        info.GetReturnValue().Set(Scalar::NewInstance(self->scalar.mul(scalar, scale)));
+      }
+
+      NAN_METHOD(Conj) {
+        SETUP_FUNCTION(Scalar)
+
+          info.GetReturnValue().Set(Scalar::NewInstance(self->scalar.conj()));
+      }
+
+      NAN_METHOD(IsReal) {
+        SETUP_FUNCTION(Scalar)
+
+          info.GetReturnValue().Set(Nan::New<Boolean>(self->scalar.isReal()));
+      }
+
+    }
+  }
+}
+
+using namespace scalar;
+
 Nan::Persistent<FunctionTemplate> Scalar::constructor;
 
-void Scalar::Init(Local<Object> target) {
+NAN_MODULE_INIT(Scalar::Init) {
   Nan::HandleScope scope;
 
   // Constructor
@@ -50,6 +127,8 @@ NAN_METHOD(Scalar::New) {
   info.GetReturnValue().Set(info.This());
 }
 
+NEW_INSTANCE_DEF(Scalar)
+
 Local<Object> Scalar::NewInstance(cv::Scalar const &scalar) {
   Nan::EscapableHandleScope scope;
 
@@ -70,6 +149,8 @@ Local<Object> Scalar::NewInstance(double const &v0, double const &v1, double con
 
   return scope.Escape(inst);
 }
+
+HAS_INSTANCE_DEF(Scalar)
 
 cv::Scalar Scalar::RawScalar(int const &argc, Local<Value>* const argv) {
   Nan::EscapableHandleScope scope;
@@ -120,72 +201,4 @@ cv::Scalar Scalar::RawScalar(int const &argc, Local<Value>* const argv) {
   }
 
   throw cv::format("Expected 0-4 arguments, but got %d", argc).c_str();
-}
-
-NAN_INDEX_GETTER(Scalar::IndexGetter) {
-  SETUP_FUNCTION(Scalar);
-  if (index < 4) {
-    info.GetReturnValue().Set(Nan::New<Number>(self->scalar[index]));
-  }
-}
-
-NAN_INDEX_SETTER(Scalar::IndexSetter) {
-  SETUP_FUNCTION(Scalar);
-  if (index < 4) {
-    if (!value->IsNumber()) {
-      return Nan::ThrowTypeError("value must be a number");
-    }
-
-    self->scalar[index] = value->NumberValue();
-    info.GetReturnValue().Set(info.This());
-  }
-}
-
-NAN_INDEX_QUERY(Scalar::IndexQuery) {
-  if (index < 4) {
-    info.GetReturnValue().Set(Nan::New<Integer>(DontDelete));
-  }
-}
-
-NAN_INDEX_ENUMERATOR(Scalar::IndexEnumerator) {
-  v8::Local<v8::Array> arr = Nan::New<v8::Array>();
-  for (int i = 0; i < 4; i++) {
-    Nan::Set(arr, i, Nan::New(std::to_string(i)).ToLocalChecked());
-  }
-  info.GetReturnValue().Set(arr);
-}
-
-NAN_METHOD(Scalar::Mul) {
-  SETUP_FUNCTION(Scalar)
-
-  if (info.Length() == 0) {
-    return Nan::ThrowError("Scalar.mul requires at least 1 argument");
-  }
-
-  SETUP_ARGC_AND_ARGV;
-
-  cv::Scalar scalar;
-  try {
-    scalar = RawScalar(argc, argv);
-  } catch (const char* msg) {
-    delete[] argv;
-    return Nan::ThrowTypeError(msg);
-  }
-  delete[] argv;
-
-  DEFAULT_DOUBLE_FROM_ARGS(scale, 1, 1);
-
-  info.GetReturnValue().Set(NewInstance(self->scalar.mul(scalar, scale)));
-}
-
-NAN_METHOD(Scalar::Conj) {
-  SETUP_FUNCTION(Scalar)
-
-  info.GetReturnValue().Set(NewInstance(self->scalar.conj()));
-}
-
-NAN_METHOD(Scalar::IsReal) {
-  SETUP_FUNCTION(Scalar)
-
-  info.GetReturnValue().Set(Nan::New<Boolean>(self->scalar.isReal()));
 }

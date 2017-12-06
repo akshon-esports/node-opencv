@@ -1,5 +1,7 @@
 #include "Range.h"
 
+using namespace ncv::common;
+
 Nan::Persistent<FunctionTemplate> Range::constructor;
 
 void Range::Init(Local<Object> target) {
@@ -53,6 +55,8 @@ NAN_METHOD(Range::New) {
   info.GetReturnValue().Set(info.This());
 }
 
+NEW_INSTANCE_DEF(Range)
+
 Local<Object> Range::NewInstance(cv::Range const &range) {
   Nan::EscapableHandleScope scope;
 
@@ -71,6 +75,8 @@ Local<Object> Range::NewInstance(int const &start, int const &end) {
 
   return scope.Escape(inst);
 }
+
+HAS_INSTANCE_DEF(Range)
 
 cv::Range Range::RawRange(int const &argc, Local<Value>* const argv) {
   Nan::HandleScope scope;

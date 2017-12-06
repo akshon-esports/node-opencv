@@ -1,5 +1,7 @@
 #include "feature.h"
 
+#include "../common/Point.h"
+
 namespace ncv {
 
   namespace imgproc {

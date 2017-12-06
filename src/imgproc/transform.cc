@@ -1,4 +1,5 @@
 #include "transform.h"
+#include "../common/Size.h"
 
 namespace ncv {
 

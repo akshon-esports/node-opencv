@@ -25,7 +25,7 @@ using namespace node;
   UNWRAP_OBJECT(TYPE, info[IND]->ToObject())
 
 #define UNWRAP_NEW_INSTANCE(TYPE, NAME) \
-  Local<Object> inst = NewInstance(); \
+  Local<Object> inst = TYPE::NewInstance(); \
   TYPE* NAME = UNWRAP_OBJECT(TYPE, inst);
 
 #define SETUP_FUNCTION(TYP)	\
@@ -49,14 +49,20 @@ using namespace node;
 #define FUNCTION_REQUIRE_ARGUMENTS_RANGE(COUNT_MIN, COUNT_MAX) \
   FUNCTION_REQUIRE_ARGUMENTS_CUSTOM(info.Length() < COUNT_MIN || info.Length() > COUNT_MAX, cv::format("%d-%d", COUNT_MIN, COUNT_MAX).c_str()) \
 
-#define NEW_INSTANCE_DEF \
-  static inline Local<Object> NewInstance() { \
+#define NEW_INSTANCE_DECL \
+  static Local<Object> NewInstance()
+
+#define NEW_INSTANCE_DEF(TYPE) \
+  Local<Object> TYPE::NewInstance() { \
     Nan::EscapableHandleScope scope; \
     return scope.Escape(Nan::NewInstance(Nan::GetFunction(Nan::New(constructor)).ToLocalChecked()).ToLocalChecked()); \
-  };
+  }
 
-#define HAS_INSTANCE_DEF \
-  static inline bool HasInstance(Local<Value> object) { \
+#define HAS_INSTANCE_DECL \
+  static bool HasInstance(Local<Value> object)
+
+#define HAS_INSTANCE_DEF(TYPE) \
+  bool TYPE::HasInstance(Local<Value> object) { \
     return Nan::New(constructor)->HasInstance(object); \
   };
 
@@ -167,12 +173,6 @@ using namespace node;
 #define GENERIC_NAMED_PROPERTY_DELETER(name) void name(Local<Name> property, Local<Value> value, const PropertyCallbackInfo<Value> &info)
 #define GENERIC_NAMED_PROPERTY_ENUMERATOR(name) void name(const PropertyCallbackInfo<Array> &info)
 
-#include "common/Range.h"
-#include "common/Point.h"
-#include "common/Rect.h"
-#include "common/Scalar.h"
-#include "common/Size.h"
-#include "common/Matrix.h"
-#include "common/UnifiedMatrix.h"
+#include "common/common.h"
 
 #endif // __COMMON_H__

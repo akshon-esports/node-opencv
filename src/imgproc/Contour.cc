@@ -1,6 +1,8 @@
 #include "Contour.h"
 
 #include <iostream>
+#include "../common/Point.h"
+#include "../common/Rect.h"
 
 Nan::Persistent<FunctionTemplate> Contour::constructor;
 

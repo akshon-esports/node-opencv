@@ -15,9 +15,9 @@ public:
 
   OCRTesseract() : Nan::ObjectWrap() {};
 
-  NEW_INSTANCE_DEF;
+  NEW_INSTANCE_DECL;
 
-  HAS_INSTANCE_DEF;
+  HAS_INSTANCE_DECL;
 
   static NAN_METHOD(SetWhitelist);
 

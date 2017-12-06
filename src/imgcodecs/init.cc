@@ -1,4 +1,11 @@
-#include "common.h"
+#include "../common.h"
+
+#include "opencv2/imgcodecs.hpp"
+
+#include "../common/async.h"
+#include "../common/Matrix.h"
+
+using namespace ncv::common;
 
 namespace ncv {
   

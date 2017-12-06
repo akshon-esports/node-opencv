@@ -36,6 +36,8 @@ NAN_METHOD(Contours::New) {
   info.GetReturnValue().Set(info.Holder());
 }
 
+NEW_INSTANCE_DEF(Contours)
+
 Local<Object> Contours::NewInstance(const std::vector<std::vector<cv::Point>> &contours, const std::vector<cv::Vec4i> &hierarchy) {
   Nan::EscapableHandleScope scope;
 
@@ -47,6 +49,8 @@ Local<Object> Contours::NewInstance(const std::vector<std::vector<cv::Point>> &c
 
   return scope.Escape(inst);
 }
+
+HAS_INSTANCE_DEF(Contours)
 
 NAN_INDEX_GETTER(Contours::IndexGetter) {
   Contours *self = UNWRAP_OBJECT(Contours, info.This());

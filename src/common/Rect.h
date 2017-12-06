@@ -19,13 +19,13 @@ namespace ncv {
 
       Rect() : Nan::ObjectWrap() {};
 
-      NEW_INSTANCE_DEF;
+      NEW_INSTANCE_DECL;
       static Local<Object> NewInstance(cv::Rect const &rect);
       static Local<Object> NewInstance(cv::Point const &point, cv::Size const &size);
       static Local<Object> NewInstance(cv::Point const &point1, cv::Point const &point2);
       static Local<Object> NewInstance(int const &x, int const &y, int const &width, int const &height);
 
-      HAS_INSTANCE_DEF;
+      HAS_INSTANCE_DECL;
 
       static cv::Rect RawRect(int const &argc, Local<Value>* const argv);
 

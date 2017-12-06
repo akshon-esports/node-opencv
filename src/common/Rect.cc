@@ -1,4 +1,6 @@
 #include "Rect.h"
+#include "Point.h"
+#include "Size.h"
 
 Nan::Persistent<FunctionTemplate> Rect::constructor;
 
@@ -59,6 +61,8 @@ NAN_METHOD(Rect::New) {
   info.GetReturnValue().Set(info.This());
 }
 
+NEW_INSTANCE_DEF(Rect)
+
 Local<Object> Rect::NewInstance(cv::Rect const &rect) {
   Nan::EscapableHandleScope scope;
 
@@ -94,6 +98,8 @@ Local<Object> Rect::NewInstance(int const &x, int const &y, int const &width, in
 
   return scope.Escape(inst);
 }
+
+HAS_INSTANCE_DEF(Rect)
 
 cv::Rect Rect::RawRect(int const &argc, Local<Value>* const argv) {
   Nan::HandleScope scope;

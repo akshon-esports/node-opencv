@@ -27,6 +27,10 @@ NAN_METHOD(VideoWriter::New) {
   NotImplemented
 }
 
+NEW_INSTANCE_DEF(VideoWriter)
+
+HAS_INSTANCE_DEF(VideoWriter)
+
 NAN_METHOD(VideoWriter::Get) {
   NotImplemented
 }

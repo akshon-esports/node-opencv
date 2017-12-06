@@ -1,4 +1,9 @@
 #include "UnifiedMatrix.h"
+#include "Size.h"
+#include "Scalar.h"
+#include "Range.h"
+#include "Rect.h"
+#include "Matrix.h"
 
 Nan::Persistent<FunctionTemplate> UnifiedMatrix::constructor;
 
@@ -89,6 +94,8 @@ NAN_METHOD(UnifiedMatrix::New) {
   info.GetReturnValue().Set(info.Holder());
 }
 
+NEW_INSTANCE_DEF(UnifiedMatrix)
+
 Local<Object> UnifiedMatrix::NewInstance(cv::UMat mat) {
   Nan::EscapableHandleScope scope;
 
@@ -96,6 +103,8 @@ Local<Object> UnifiedMatrix::NewInstance(cv::UMat mat) {
   m->mat = mat;
   return scope.Escape(inst);
 }
+
+HAS_INSTANCE_DEF(UnifiedMatrix)
 
 cv::UMat UnifiedMatrix::RawUnifiedMatrix(int const&argc, Local<Value>* const argv) {
   Nan::HandleScope scope;

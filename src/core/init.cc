@@ -1,5 +1,17 @@
 #include "array.h"
 
+#include <opencv2/core.hpp>
+
+#include "../common/Matrix.h"
+#include "../common/Point.h"
+#include "../common/Range.h"
+#include "../common/Rect.h"
+#include "../common/Scalar.h"
+#include "../common/Size.h"
+#include "../common/UnifiedMatrix.h"
+
+using namespace ncv::common;
+
 extern "C" void init(Local<Object> target) {
   Nan::HandleScope scope;
 
@@ -100,6 +112,7 @@ extern "C" void init(Local<Object> target) {
   DEFINE_CONST_ENUM(REDUCE_MIN);
 
   Point::Init(target);
+  Range::Init(target);
   Rect::Init(target);
   Scalar::Init(target);
   Size::Init(target);

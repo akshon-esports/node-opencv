@@ -1,4 +1,5 @@
 #include "VideoCapture.h"
+#include "../common/Matrix.h"
 
 Nan::Persistent<FunctionTemplate> VideoCapture::constructor;
 
@@ -49,6 +50,10 @@ NAN_METHOD(VideoCapture::New) {
   vc->Wrap(info.Holder());
   info.GetReturnValue().Set(info.Holder());
 }
+
+NEW_INSTANCE_DEF(VideoCapture)
+
+HAS_INSTANCE_DEF(VideoCapture)
 
 NAN_METHOD(VideoCapture::Get) {
   FUNCTION_REQUIRE_ARGUMENTS(1);

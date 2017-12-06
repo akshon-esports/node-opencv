@@ -1,6 +1,11 @@
 #include "draw.h"
 
 #include "Contours.h"
+#include "../common/Point.h"
+#include "../common/Scalar.h"
+#include "../common/Size.h"
+#include "../common/Rect.h"
+#include "../common/Matrix.h"
 
 namespace ncv {
 

@@ -51,6 +51,8 @@ NAN_METHOD(Size::New) {
   info.GetReturnValue().Set(info.This());
 }
 
+NEW_INSTANCE_DEF(Size)
+
 Local<Object> Size::NewInstance(cv::Size const &size) {
   Nan::EscapableHandleScope scope;
 
@@ -69,6 +71,8 @@ Local<Object> Size::NewInstance(int const &width, int const &height) {
 
   return scope.Escape(inst);
 }
+
+HAS_INSTANCE_DEF(Size)
 
 cv::Size Size::RawSize(int const &argc, Local<Value>* const argv) {
   Nan::HandleScope scope;

@@ -1,6 +1,7 @@
 #include "shape.h"
 
 #include "Contours.h"
+#include "../common/Point.h"
 
 namespace ncv {
 

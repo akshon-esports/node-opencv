@@ -27,10 +27,10 @@ public:
 
   Contours() {};
 
-  NEW_INSTANCE_DEF;
+  NEW_INSTANCE_DECL;
   static Local<Object> NewInstance(const std::vector<std::vector<cv::Point>> &contours, const std::vector<cv::Vec4i> &hierarchy);
 
-  HAS_INSTANCE_DEF;
+  HAS_INSTANCE_DECL;
 
   static NAN_INDEX_GETTER(IndexGetter);
   static NAN_INDEX_SETTER(IndexSetter);

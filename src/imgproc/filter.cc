@@ -1,4 +1,8 @@
 #include "filter.h"
+#include "../common/Size.h"
+#include "../common/Point.h"
+#include "../common/Scalar.h"
+#include "../common/Matrix.h"
 
 namespace ncv {
 

@@ -15,9 +15,9 @@ public:
 
   VideoCapture() {};
 
-  NEW_INSTANCE_DEF;
+  NEW_INSTANCE_DECL;
 
-  HAS_INSTANCE_DEF;
+  HAS_INSTANCE_DECL;
 
   static NAN_METHOD(Get);
   static NAN_METHOD(Grab);

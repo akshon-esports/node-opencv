@@ -47,6 +47,8 @@ NAN_METHOD(Point::New) {
   info.GetReturnValue().Set(info.This());
 }
 
+NEW_INSTANCE_DEF(Point)
+
 Local<Object> Point::NewInstance(cv::Point const &point) {
   Nan::EscapableHandleScope scope;
 
@@ -67,6 +69,8 @@ Local<Object> Point::NewInstance(int const &x, int const &y) {
 
   return scope.Escape(obj);
 }
+
+HAS_INSTANCE_DEF(Point)
 
 cv::Point Point::RawPoint(int const &argc, Local<Value>* const argv) {
   Nan::HandleScope scope;

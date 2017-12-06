@@ -20,10 +20,10 @@ namespace ncv {
       UnifiedMatrix() : Nan::ObjectWrap() {};
       UnifiedMatrix(cv::UMat mat) : Nan::ObjectWrap(), mat(mat) {};
 
-      NEW_INSTANCE_DEF;
+      NEW_INSTANCE_DECL;
       static Local<Object> NewInstance(cv::UMat mat);
 
-      HAS_INSTANCE_DEF;
+      HAS_INSTANCE_DECL;
 
       static cv::UMat RawUnifiedMatrix(int const &argc, Local<Value>* const argv);
 

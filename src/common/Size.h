@@ -34,14 +34,11 @@ namespace ncv {
 
       Size() : Nan::ObjectWrap() {};
 
-      static inline Local<Object> NewInstance() {
-        Nan::EscapableHandleScope scope;
-        return scope.Escape(Nan::NewInstance(Nan::GetFunction(Nan::New(constructor)).ToLocalChecked()).ToLocalChecked());
-      };
+      NEW_INSTANCE_DECL;
       static Local<Object> NewInstance(cv::Size const &size);
       static Local<Object> NewInstance(int const &width, int const &height);
 
-      HAS_INSTANCE_DEF;
+      HAS_INSTANCE_DECL;
 
       static cv::Size RawSize(int const &argc, Local<Value>* const argv);
 

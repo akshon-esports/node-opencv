@@ -1,4 +1,6 @@
 #include "OCRTesseract.h"
+#include "../common/Matrix.h"
+#include "../common/Rect.h"
 
 Nan::Persistent<FunctionTemplate> OCRTesseract::constructor;
 
@@ -51,6 +53,10 @@ NAN_METHOD(OCRTesseract::New) {
 
   info.GetReturnValue().Set(info.This());
 }
+
+NEW_INSTANCE_DEF(OCRTesseract)
+
+HAS_INSTANCE_DEF(OCRTesseract)
 
 NAN_METHOD(OCRTesseract::SetWhitelist) {
   FUNCTION_REQUIRE_ARGUMENTS(1);

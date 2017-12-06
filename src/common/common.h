@@ -3,8 +3,6 @@
 
 #include "opencv2/core.hpp"
 
-#define BUILDING_NCV_COMMON_BINDINGS
-
 #include "../common.h"
 
 namespace ncv {
@@ -25,17 +23,6 @@ namespace ncv {
     NCV_COMMON_EXTERN cv::_InputArray ReadInputArray(Local<Value> value);
     NCV_COMMON_EXTERN cv::_InputOutputArray ReadInputOutputArray(Local<Value> value);
     NCV_COMMON_EXTERN cv::_OutputArray ReadOutputArray(Local<Value> value);
-
-    class NCV_COMMON_EXTERN HybridAsyncWorker : public Nan::AsyncWorker {
-    public:
-      HybridAsyncWorker() : AsyncWorker{ nullptr } {}
-      virtual Local<Value> GetResult();
-      bool HasError() const;
-      Local<Value> Error() const;
-    protected:
-      void HandleOKCallback() override final;
-      void HandleErrorCallback() override final;
-    };
 
   }
 

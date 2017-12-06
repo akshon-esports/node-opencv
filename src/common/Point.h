@@ -34,11 +34,11 @@ namespace ncv {
 
       Point() : Nan::ObjectWrap() {};
 
-      NEW_INSTANCE_DEF;
+      NEW_INSTANCE_DECL;
       static Local<Object> NewInstance(cv::Point const &point);
       static Local<Object> NewInstance(int const &x, int const &y);
 
-      HAS_INSTANCE_DEF;
+      HAS_INSTANCE_DECL;
 
       static cv::Point RawPoint(int const &argc, Local<Value>* const argv);
 

@@ -29,27 +29,18 @@ namespace ncv {
     public:
       cv::Scalar scalar;
 
-      static void Init(Local<Object> target);
+      static NAN_MODULE_INIT(Init);
       static NAN_METHOD(New);
 
       Scalar() : Nan::ObjectWrap() {};
 
-      NEW_INSTANCE_DEF;
+      NEW_INSTANCE_DECL;
       static Local<Object> NewInstance(cv::Scalar const &scalar);
       static Local<Object> NewInstance(double const &v0, double const &v1 = 0, double const &v2 = 0, double const &v3 = 0);
 
-      HAS_INSTANCE_DEF;
+      HAS_INSTANCE_DECL;
 
       static cv::Scalar RawScalar(int const &argc, Local<Value>* const argv);
-
-      static NAN_INDEX_GETTER(IndexGetter);
-      static NAN_INDEX_SETTER(IndexSetter);
-      static NAN_INDEX_QUERY(IndexQuery);
-      static NAN_INDEX_ENUMERATOR(IndexEnumerator);
-
-      static NAN_METHOD(Mul);
-      static NAN_METHOD(Conj);
-      static NAN_METHOD(IsReal);
     };
     
   }
