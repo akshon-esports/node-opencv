@@ -1,6 +1,6 @@
 {
   "name": "opencv",
-  "version": "3.3.0-1",
+  "version": "3.3.0-2",
   "description": "Node Bindings to OpenCV",
   "author": "Peter Braden <peterbraden@peterbraden.co.uk>",
   "dependencies": {

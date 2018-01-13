@@ -90,6 +90,36 @@ namespace ncv {
       std::vector<int> const params;
     };
 
+    void imencode_buffer_delete_callback(char* data, void* buf) {
+      delete reinterpret_cast<std::vector<uchar> *> (buf);
+    }
+
+    class ImageEncodeWorker : public HybridAsyncWorker {
+    public:
+      ImageEncodeWorker(std::string const &ext, cv::_InputArray const &img, std::vector<int> const &params) : HybridAsyncWorker(), ext(ext), img(img), params(params) {
+        buf = new std::vector<uchar>();
+      }
+
+      void Execute() override {
+        try {
+          cv::imencode(ext, img, *buf, params);
+        } catch (cv::Exception& e) {
+          return SetErrorMessage(e.what());
+        }
+      }
+
+      Local<Value> GetResult() {
+        Nan::HandleScope scope;
+        return Nan::NewBuffer(reinterpret_cast<char *>(buf->data()), buf->size(), imencode_buffer_delete_callback, buf).ToLocalChecked();
+      }
+
+    private:
+      std::string const ext = "";
+      std::vector<uchar>* buf;
+      cv::_InputArray const img;
+      std::vector<int> const params;
+    };
+
     NAN_METHOD(ImageRead) {
       FUNCTION_REQUIRE_ARGUMENTS_RANGE(1, 3);
       Nan::HandleScope scope;
@@ -264,7 +294,6 @@ namespace ncv {
       }
     }
 
-#if CV_MAJOR_VERSION >= 3
     class ReadImageMultiAsyncWorker : public BaseImageReadingAsyncWorker {
     public:
       ReadImageMultiAsyncWorker(const std::string &path) : BaseImageReadingAsyncWorker(), path(path) {}
@@ -297,10 +326,8 @@ namespace ncv {
 
       std::vector<cv::Mat> mats;
     };
-#endif
 
     NAN_METHOD(ImageReadMulti) {
-#if CV_MAJOR_VERSION >= 3
       FUNCTION_REQUIRE_ARGUMENTS_RANGE(1, 3);
       Nan::EscapableHandleScope scope;
 
@@ -334,13 +361,9 @@ namespace ncv {
       }
 
       Nan::AsyncQueueWorker(worker);
-#else
-      Nan::ThrowError("only supported in opencv 3.x")
-#endif
     }
 
     NAN_METHOD(ImageReadMultiSync) {
-#if CV_MAJOR_VERSION >= 3
       FUNCTION_REQUIRE_ARGUMENTS_RANGE(1, 2);
       Nan::EscapableHandleScope scope;
       ASSERT_STRING_FROM_ARGS(path, 0);
@@ -355,17 +378,77 @@ namespace ncv {
       }
 
       info.GetReturnValue().Set(worker.GetResult());
-#else
-      Nan::ThrowError("only supported in opencv 3.x")
-#endif
     }
 
     NAN_METHOD(ImageEncode) {
-      NotImplemented
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(2, 3);
+      Nan::HandleScope scope;
+      ASSERT_STRING_FROM_ARGS(ext, 0);
+      ASSERT_MATRIX_FROM_ARGS(image, 1);
+
+      int argumentOffset = 0;
+      std::vector<int> params;
+      if (info.Length() > 2 && info[2]->IsArray()) {
+        Local<Array> numbers = Local<Array>::Cast(info[2]);
+        for (unsigned i = 0; i < numbers->Length(); ++i) {
+          Local<Value> val = Nan::Get(numbers, i).ToLocalChecked();
+          if (!val->IsNumber()) {
+            return Nan::ThrowError(ERROR_INVALID_ARGUMENTS);
+          }
+          params.push_back(val->Int32Value());
+        }
+        argumentOffset += 1;
+      }
+
+      bool isCallback = false;
+
+      if (info.Length() > 2 + argumentOffset) {
+        if (!info[2 + argumentOffset]->IsFunction()) {
+          return THROW_INVALID_ARGUMENT_TYPE(1 + argumentOffset, "a function");
+        }
+
+        isCallback = true;
+      }
+
+      ImageEncodeWorker* worker = new ImageEncodeWorker(ext, image->mat, params);
+
+      if (isCallback) {
+        worker->SaveToPersistent(0u, info[2 + argumentOffset]);
+      } else {
+        Local<Promise::Resolver> resolver = Promise::Resolver::New(Nan::GetCurrentContext()).ToLocalChecked();
+        worker->SaveToPersistent(0u, resolver);
+        info.GetReturnValue().Set(resolver->GetPromise());
+      }
+
+      Nan::AsyncQueueWorker(worker);
     }
 
     NAN_METHOD(ImageEncodeSync) {
-      NotImplemented
+      FUNCTION_REQUIRE_ARGUMENTS_RANGE(2, 3);
+      Nan::HandleScope scope;
+      ASSERT_STRING_FROM_ARGS(ext, 0);
+      ASSERT_MATRIX_FROM_ARGS(image, 1);
+
+      std::vector<int> params;
+      if (info.Length() > 2 && info[2]->IsArray()) {
+        Local<Array> numbers = Local<Array>::Cast(info[2]);
+        for (unsigned i = 0; i < numbers->Length(); ++i) {
+          Local<Value> val = Nan::Get(numbers, i).ToLocalChecked();
+          if (!val->IsNumber()) {
+            return Nan::ThrowError(ERROR_INVALID_ARGUMENTS);
+          }
+          params.push_back(val->Int32Value());
+        }
+      }
+
+      ImageEncodeWorker worker(ext, image->mat, params);
+      worker.Execute();
+
+      if (worker.HasError()) {
+        return Nan::ThrowError(worker.Error());
+      }
+
+      info.GetReturnValue().Set(worker.GetResult());
     }
 
     extern "C" void init(Local<Object> target) {

@@ -10,11 +10,13 @@ var Matrix = require('../core').Matrix
   , imageReadSync = null
   , imageDecode = null
   , imageDecodeSync = null
+  , imageEncode = null
+  , imageEncodeSync = null
   , imageReadMulti = null
   , imageReadMultiSync = null;
 
-var MONA_PNG = path.resolve(__dirname, '../examples/files/mona.png')
-  , MULTI_TIF = path.resolve(__dirname, '../examples/files/multipage.tif');
+var MONA_PNG = path.resolve(__dirname, 'mona.png')
+  , MULTI_TIF = path.resolve(__dirname, 'multipage.tif');
 
 test('importing / smoke test', function(assert) {
   assert.ok(cv_imgcodecs = require('../imgcodecs'), 'should import');
@@ -22,6 +24,8 @@ test('importing / smoke test', function(assert) {
   assert.ok(imageReadSync = cv_imgcodecs.imreadSync, 'should have imageReadSync');
   assert.ok(imageDecode = cv_imgcodecs.imdecode, 'should have imageDecode');
   assert.ok(imageDecodeSync = cv_imgcodecs.imdecodeSync, 'should have imageDecodeSync');
+  assert.ok(imageEncode = cv_imgcodecs.imencode, 'should have imageEncode');
+  assert.ok(imageEncodeSync = cv_imgcodecs.imencodeSync, 'should have imageEncodeSync');
   assert.ok(imageReadMulti = cv_imgcodecs.imreadmulti, 'should have imageReadMulti');
   assert.ok(imageReadMultiSync = cv_imgcodecs.imreadmultiSync, 'should have imageReadMultiSync');
 
@@ -119,6 +123,41 @@ test('imageDecode', function(assert) {
     assert.throws(function() {imageDecodeSync()}, common.argcRangeAssertionError(1, 2, 0), 'should throw when given no arguments');
 
     assert.ok(imageDecodeSync(monaBuf), 'should work when given a valid image buffer');
+
+    assert.end();
+  });
+
+  assert.end();
+});
+
+test('imageEncode', function(assert) {
+  var mona = imageReadSync(MONA_PNG);
+
+  assert.throws(function() {imageEncode()}, common.argcRangeAssertionError(2, 3, 0), 'should throw when given no arguments');
+
+  test('callback', function(assert) {
+    assert.plan(2);
+
+    imageEncode('.png', mona, function(err, buf) {
+      assert.notok(err, 'should be undefined when given a valid image matrix');
+      assert.ok(buf && buf instanceof Buffer, 'should work when given a path to a valid image matrix');
+    });
+  });
+
+  test('promise', function(assert) {
+    assert.plan(1);
+
+    imageEncode(mona).then(function(buf) {
+      assert.ok(buf && buf instanceof Buffer, 'should work when given a path to a valid image matrix');
+    }, function(err) {
+      assert.notok(err, 'should be undefined when given a valid image matrix');
+    });
+  });
+
+  test('sync', function(assert) {
+    assert.throws(function() {imageEncodeSync()}, common.argcRangeAssertionError(2, 3, 0), 'should throw when given no arguments');
+
+    assert.ok(imageEncodeSync('.png', mona), 'should work when given a valid image matrix');
 
     assert.end();
   });

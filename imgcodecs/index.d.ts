@@ -63,7 +63,7 @@ export function imencode(ext: EncodeExtensions, img: InputArray, params?: number
 export function imencode(ext: EncodeExtensions, img: InputArray, callback: (err: Error, buf: Buffer) => void): void;
 export function imencode(ext: EncodeExtensions, img: InputArray, params: number[], callback: (err: Error, buf: Buffer) => void): void;
 
-export function imencodeSync(ext: EncodeExtensions, img: InputArray, params: number[]): Buffer;
+export function imencodeSync(ext: EncodeExtensions, img: InputArray, params?: number[]): Buffer;
 
 export function imreadmulti(filename: string, flags?: number): Promise<Matrix[]>;
 export function imreadmulti(filename: string, callback: (err: Error, images: Matrix[]) => void): void;
